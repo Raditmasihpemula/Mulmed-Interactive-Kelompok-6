@@ -13,8 +13,10 @@
         <h1>PILIH HERO & MODE</h1>
         
         <div class="mode-select" style="margin-bottom: 20px;">
-            <label for="difficulty" style="display:block; margin-bottom:10px;">Tingkat Kesulitan:</label>
-            <select id="difficulty" style="padding: 10px; font-family: 'Press Start 2P';">
+            <label for="difficulty" style="display:block; margin-bottom:10px; color: yellow;">Tingkat Kesulitan (Wajib):</label>
+            
+            <select id="difficulty" style="padding: 10px; font-family: 'Press Start 2P'; cursor: pointer;">
+                <option value="" disabled selected>-- PILIH LEVEL DULU --</option>
                 <option value="easy">Easy (10 Pipa)</option>
                 <option value="normal">Normal (15 Pipa)</option>
                 <option value="hard">Hard (25 Pipa)</option>
@@ -44,20 +46,27 @@
                 <p>Umar Mukhtar</p>
             </div>  
         </div> 
-        <br> <a href="index.html" class="btn-back">KEMBALI</a>
 
+        <br>
+        <a href="index.html" class="btn-back">KEMBALI</a>
     </div>
 
     <script>
         function selectChar(characterId) {
-            // 1. Ambil nilai difficulty dari dropdown
+            // 1. Ambil nilai difficulty
             const diff = document.getElementById('difficulty').value;
             
-            // 2. Simpan Karakter & Difficulty ke LocalStorage
+            // 2. VALIDASI: Kalau masih kosong (belum milih), marahin user
+            if (diff === "") {
+                alert("Woi, pilih tingkat kesulitan dulu di atas! 👆");
+                return; // Stop, jangan lanjut
+            }
+            
+            // 3. Simpan Karakter & Difficulty ke LocalStorage
             localStorage.setItem('selectedChar', characterId);
             localStorage.setItem('gameDifficulty', diff);
             
-            // 3. Gas ke game
+            // 4. Gas ke game
             window.location.href = 'game.html';
         }
     </script>
