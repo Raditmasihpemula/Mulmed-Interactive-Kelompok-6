@@ -1,16 +1,31 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// --- SETUP AUDIO (SFX) ---
+// Pastikan file-nya ada di folder assets/audio/ ya!
+const sfxJump = new Audio('assets/audio/jump.mp3');
+const sfxScore = new Audio('assets/audio/score.mp3');
+const sfxDie = new Audio('assets/audio/die.mp3');
+
+// Atur Volume (0.0 sampe 1.0) biar ga pecah telinga
+sfxJump.volume = 0.6;
+sfxScore.volume = 0.6;
+sfxDie.volume = 0.8;
+
+// Ambil elemen BGM dari HTML
+const bgm = document.getElementById("bgm");
+if(bgm) bgm.volume = 0.5; 
+
 // --- SETUP VARIABLE ---
 let frames = 0;
 let score = 0;
 let isGameOver = false;
 let isGameWon = false; 
+let gameStarted = false; // Penanda biar BGM nyala pas klik pertama
 
 // 1. AMBIL DATA DARI HALAMAN SEBELUMNYA
 const selectedChar = localStorage.getItem('selectedChar') || 'char1';
-// Default ke easy jaga-jaga, tapi harusnya udah ke-handle di html
-const difficulty = localStorage.getItem('gameDifficulty') || 'easy'; 
+const difficulty = localStorage.getItem('gameDifficulty') || 'easy';
 
 // 2. SETTING TARGET SKOR
 let targetScore = 10;
@@ -46,6 +61,16 @@ const bird = {
     
     flap: function() {
         this.velocity = -this.jump;
+        
+        // --- LOGIKA SUARA ---
+        sfxJump.currentTime = 0; // Reset biar bisa bunyi cepet (tek-tek-tek)
+        sfxJump.play();
+        
+        // Nyalain BGM pas loncat pertama kali (Trik biar ga diblok browser)
+        if (!gameStarted && bgm) {
+            bgm.play().catch(e => console.log("Klik dulu baru lagu nyala"));
+            gameStarted = true;
+        }
     }
 };
 
@@ -85,6 +110,10 @@ const pipes = {
                 this.position.shift();
                 score++;
                 
+                // BUNYI TING!
+                sfxScore.currentTime = 0;
+                sfxScore.play();
+                
                 // CEK MENANG
                 if (score >= targetScore) {
                     gameWin();
@@ -122,6 +151,11 @@ function loop() {
 // --- FUNGSI KALAH ---
 function gameOver() {
     isGameOver = true;
+    
+    // MATIKAN BGM & MAINKAN SUARA MATI
+    if(bgm) bgm.pause();
+    sfxDie.play();
+
     ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "white";
@@ -133,6 +167,7 @@ function gameOver() {
 // --- FUNGSI MENANG ---
 function gameWin() {
     isGameWon = true;
+    if(bgm) bgm.pause(); // Matikan lagu pas menang
     
     ctx.fillStyle = "rgba(0,0,0,0.8)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -145,18 +180,13 @@ function gameWin() {
     ctx.fillText("Klik Layar buat Lanjut...", 70, canvas.height/2 + 20);
 }
 
-// --- CONTROLLER (YANG BIKIN STUCK UDAH DI FIX DISINI) ---
-
-// Ganti canvas.addEventListener jadi window.addEventListener
-// Biar lu klik dimanapun (di luar kotak game) tetep respon
+// --- CONTROLLER ---
 window.addEventListener("click", function(e) {
     if (isGameOver) {
         location.reload(); 
     } else if (isGameWon) {
-        // Redirect ke Next Level
         window.location.href = 'next-level.html'; 
     } else {
-        // Logic biar ga loncat kalo ngeklik tombol UI lain
         if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'SELECT') {
             bird.flap();
         }
