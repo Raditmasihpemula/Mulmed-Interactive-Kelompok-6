@@ -35,17 +35,56 @@
             </div>
         </div>
 
+        <div class="container">
+        <h1>PILIH HERO & MODE</h1>
+        
+        <div class="mode-select" style="margin-bottom: 20px;">
+            <label for="difficulty" style="display:block; margin-bottom:10px;">Tingkat Kesulitan:</label>
+            <select id="difficulty" style="padding: 10px; font-family: 'Press Start 2P';">
+                <option value="easy">Easy (10 Pipa)</option>
+                <option value="normal">Normal (15 Pipa)</option>
+                <option value="hard">Hard (25 Pipa)</option>
+            </select>
+        </div>
+
+        <p class="subtitle">Klik Karakter buat Mulai:</p>
+        
+        <div class="char-grid">
+            <div class="char-card" onclick="selectChar('char1')">
+                <div class="pixel-placeholder" style="background: red;"></div>
+                <p>Radit</p>
+            </div>
+            
+            <div class="char-card" onclick="selectChar('char2')">
+                <div class="pixel-placeholder" style="background: blue;"></div>
+                <p>Temen A</p>
+            </div>
+            
+            </div>
+
+        <a href="index.html" class="btn-back">KEMBALI</a>
+    </div>
+
         <a href="index.html" class="btn-back">KEMBALI</a>
     </div>
 
     <script>
-        function selectChar(characterId) {
+//        function selectChar(characterId) {
             // Simpan pilihan ke memori browser
-            localStorage.setItem('selectedChar', characterId);
+//            localStorage.setItem('selectedChar', characterId);
             // Lempar ke halaman game
+//            window.location.href = 'game.html'; }
+        function selectChar(characterId) {
+            // 1. Ambil nilai difficulty dari dropdown
+            const diff = document.getElementById('difficulty').value;
+            
+            // 2. Simpan Karakter & Difficulty ke LocalStorage
+            localStorage.setItem('selectedChar', characterId);
+            localStorage.setItem('gameDifficulty', diff);
+            
+            // 3. Gas ke game
             window.location.href = 'game.html';
         }
     </script>
-
 </body>
 </html>

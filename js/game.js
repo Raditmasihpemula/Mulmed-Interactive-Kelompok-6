@@ -1,48 +1,49 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// --- VARIABLE GAME ---
+// --- SETUP VARIABLE ---
 let frames = 0;
 let score = 0;
 let isGameOver = false;
+let isGameWon = false; // Status menang
 
-// Ambil karakter yang dipilih dari LocalStorage
+// 1. AMBIL DATA DARI HALAMAN SEBELUMNYA
 const selectedChar = localStorage.getItem('selectedChar') || 'char1';
+const difficulty = localStorage.getItem('gameDifficulty') || 'easy';
 
-// Tentukan warna berdasarkan pilihan (Nanti diganti Gambar)
-const charColors = {
-    'char1': 'red',
-    'char2': 'blue',
-    'char3': 'green',
-    'char4': 'yellow'
+// 2. SETTING TARGET SKOR (LOGIKA MODE)
+let targetScore = 10;
+if (difficulty === 'normal') targetScore = 15;
+if (difficulty === 'hard') targetScore = 25;
+
+// 3. MAPPING FOLDER TEMEN (PENTING BIAR GA NYASAR)
+// Sesuaikan nama folder sama yang lu bikin di Langkah 1
+const nextLevelPaths = {
+    'char1': 'game-lanjutan/radit/index.html',
+    'char2': 'game-lanjutan/temen_a/index.html',
+    'char3': 'game-lanjutan/temen_b/index.html',
+    'char4': 'game-lanjutan/temen_c/index.html'
 };
 
-// --- OBJEK BURUNG (PLAYER) ---
+// --- LOGIKA WARNA KARAKTER (NANTI GANTI FOTO) ---
+const charColors = {
+    'char1': 'red', 'char2': 'blue', 'char3': 'green', 'char4': 'yellow'
+};
+
+// --- OBJEK BURUNG ---
 const bird = {
-    x: 50,
-    y: 150,
-    w: 20,
-    h: 20,
-    velocity: 0,
-    gravity: 0.25,
-    jump: 4.6,
+    x: 50, y: 150, w: 20, h: 20, velocity: 0, gravity: 0.25, jump: 4.6,
     
     draw: function() {
-        // Gambar kotak dulu (nanti ganti drawImage buat foto muka)
         ctx.fillStyle = charColors[selectedChar];
         ctx.fillRect(this.x, this.y, this.w, this.h);
-        
-        // Garis outline biar kayak pixel
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black"; ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.w, this.h);
     },
     
     update: function() {
         this.velocity += this.gravity;
         this.y += this.velocity;
-
-        // Cek nabrak tanah
         if (this.y + this.h >= canvas.height) {
             this.y = canvas.height - this.h;
             gameOver();
@@ -56,30 +57,18 @@ const bird = {
 
 // --- OBJEK PIPA ---
 const pipes = {
-    position: [],
-    w: 40,
-    h: 150, // tinggi pipa dasar
-    gap: 100,
-    dx: 2, // kecepatan gerak pipa
+    position: [], w: 40, gap: 100, dx: 2,
     
     draw: function() {
         for (let i = 0; i < this.position.length; i++) {
             let p = this.position[i];
-            
-            ctx.fillStyle = "#2ecc71"; // Warna Pipa Hijau
-            
-            // Pipa Atas
-            ctx.fillRect(p.x, 0, this.w, p.y);
-            ctx.strokeRect(p.x, 0, this.w, p.y);
-            
-            // Pipa Bawah
-            ctx.fillRect(p.x, p.y + this.gap, this.w, canvas.height - p.y - this.gap);
-            ctx.strokeRect(p.x, p.y + this.gap, this.w, canvas.height - p.y - this.gap);
+            ctx.fillStyle = "#2ecc71";
+            ctx.fillRect(p.x, 0, this.w, p.y); // Atas
+            ctx.fillRect(p.x, p.y + this.gap, this.w, canvas.height - p.y - this.gap); // Bawah
         }
     },
     
     update: function() {
-        // Tambah pipa baru tiap 100 frame
         if (frames % 120 === 0) {
             this.position.push({
                 x: canvas.width,
@@ -89,46 +78,43 @@ const pipes = {
         
         for (let i = 0; i < this.position.length; i++) {
             let p = this.position[i];
-            p.x -= this.dx; // Geser ke kiri
+            p.x -= this.dx;
 
-            // Deteksi Tabrakan
-            // 1. Tabrak Pipa Atas
-            if (bird.x + bird.w > p.x && bird.x < p.x + this.w && bird.y < p.y) {
-                gameOver();
-            }
-            // 2. Tabrak Pipa Bawah
-            if (bird.x + bird.w > p.x && bird.x < p.x + this.w && bird.y + bird.h > p.y + this.gap) {
+            // Tabrakan Logic
+            if (bird.x + bird.w > p.x && bird.x < p.x + this.w && 
+               (bird.y < p.y || bird.y + bird.h > p.y + this.gap)) {
                 gameOver();
             }
             
-            // Hapus pipa yang lewat layar & Tambah Skor
+            // SKOR BERTAMBAH & CEK MENANG
             if (p.x + this.w <= 0) {
                 this.position.shift();
                 score++;
-                // Nanti tambahin suara 'ting' disini
+                
+                // --- CEK KONDISI MENANG DI SINI ---
+                if (score >= targetScore) {
+                    gameWin();
+                }
             }
         }
     }
 };
 
-// --- FUNGSI UTAMA ---
+// --- LOOP UTAMA ---
 function draw() {
-    // Bersihin layar (Warna Langit)
     ctx.fillStyle = "#70c5ce";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     bird.draw();
     pipes.draw();
     
-    // Tulis Skor
+    // Tampilan Skor & Target
     ctx.fillStyle = "white";
-    ctx.font = "20px 'Press Start 2P'";
-    ctx.fillText(score, 10, 30);
-    ctx.strokeText(score, 10, 30);
+    ctx.font = "16px 'Press Start 2P'";
+    ctx.fillText(`Score: ${score}/${targetScore}`, 10, 30);
 }
 
 function update() {
-    if (isGameOver) return;
+    if (isGameOver || isGameWon) return; // Stop update kalau kalah/menang
     bird.update();
     pipes.update();
 }
@@ -137,25 +123,43 @@ function loop() {
     update();
     draw();
     frames++;
-    if (!isGameOver) requestAnimationFrame(loop);
+    if (!isGameOver && !isGameWon) requestAnimationFrame(loop);
 }
 
+// --- FUNGSI KALAH ---
 function gameOver() {
     isGameOver = true;
     ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     ctx.fillStyle = "white";
-    ctx.fillText("GAME OVER", 60, canvas.height/2);
-    ctx.font = "10px 'Press Start 2P'";
-    ctx.fillText("Klik buat ulang", 90, canvas.height/2 + 30);
+    ctx.fillText("GAME OVER", 80, canvas.height/2);
+    ctx.font = "10px sans-serif";
+    ctx.fillText("Klik buat ulang", 110, canvas.height/2 + 30);
 }
 
-// --- KONTROL ---
-// Klik Mouse atau Spasi buat lompat
+// --- FUNGSI MENANG (LANJUT LEVEL) ---
+function gameWin() {
+    isGameWon = true;
+    
+    // Tampilan Menang
+    ctx.fillStyle = "rgba(0,0,0,0.8)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#f1c40f"; // Warna Emas
+    ctx.font = "20px 'Press Start 2P'";
+    ctx.fillText("LEVEL CLEAR!", 50, canvas.height/2 - 20);
+    
+    ctx.fillStyle = "white";
+    ctx.font = "12px sans-serif";
+    ctx.fillText("Klik untuk lanjut ke Level Temen Lu...", 40, canvas.height/2 + 20);
+}
+
+// --- CONTROLLER ---
 canvas.addEventListener("click", function() {
     if (isGameOver) {
-        location.reload(); // Restart game
+        location.reload(); 
+    } else if (isGameWon) {
+        // Redirect ke folder temen sesuai karakter
+        window.location.href = nextLevelPaths[selectedChar]; 
     } else {
         bird.flap();
     }
@@ -164,9 +168,9 @@ canvas.addEventListener("click", function() {
 document.addEventListener("keydown", function(e) {
     if (e.code === "Space") {
         if (isGameOver) location.reload();
+        else if (isGameWon) window.location.href = nextLevelPaths[selectedChar];
         else bird.flap();
     }
 });
 
-// Mulai Game
 loop();
