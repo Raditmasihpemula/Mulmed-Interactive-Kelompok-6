@@ -2,26 +2,23 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // --- SETUP AUDIO (SFX) ---
-// Pastikan file-nya ada di folder assets/audio/ ya!
 const sfxJump = new Audio('assets/audio/jump.mp3');
 const sfxScore = new Audio('assets/audio/score.mp3');
 const sfxDie = new Audio('assets/audio/die.mp3');
 
-// Atur Volume (0.0 sampe 1.0) biar ga pecah telinga
 sfxJump.volume = 0.6;
 sfxScore.volume = 0.6;
 sfxDie.volume = 0.8;
 
-// Ambil elemen BGM dari HTML
 const bgm = document.getElementById("bgm");
-if(bgm) bgm.volume = 0.1; 
+if(bgm) bgm.volume = 0.5; 
 
 // --- SETUP VARIABLE ---
 let frames = 0;
 let score = 0;
 let isGameOver = false;
 let isGameWon = false; 
-let gameStarted = false; // Penanda biar BGM nyala pas klik pertama
+let gameStarted = false; 
 
 // 1. AMBIL DATA DARI HALAMAN SEBELUMNYA
 const selectedChar = localStorage.getItem('selectedChar') || 'char1';
@@ -63,12 +60,11 @@ const bird = {
         this.velocity = -this.jump;
         
         // --- LOGIKA SUARA ---
-        sfxJump.currentTime = 0; // Reset biar bisa bunyi cepet (tek-tek-tek)
+        sfxJump.currentTime = 0; 
         sfxJump.play();
         
-        // Nyalain BGM pas loncat pertama kali (Trik biar ga diblok browser)
         if (!gameStarted && bgm) {
-            bgm.play().catch(e => console.log("Klik dulu baru lagu nyala"));
+            bgm.play().catch(e => console.log("Tap layar buat nyalain musik"));
             gameStarted = true;
         }
     }
@@ -109,12 +105,9 @@ const pipes = {
             if (p.x + this.w <= 0) {
                 this.position.shift();
                 score++;
-                
-                // BUNYI TING!
                 sfxScore.currentTime = 0;
                 sfxScore.play();
                 
-                // CEK MENANG
                 if (score >= targetScore) {
                     gameWin();
                 }
@@ -151,8 +144,6 @@ function loop() {
 // --- FUNGSI KALAH ---
 function gameOver() {
     isGameOver = true;
-    
-    // MATIKAN BGM & MAINKAN SUARA MATI
     if(bgm) bgm.pause();
     sfxDie.play();
 
@@ -161,13 +152,13 @@ function gameOver() {
     ctx.fillStyle = "white";
     ctx.fillText("GAME OVER", 80, canvas.height/2);
     ctx.font = "10px sans-serif";
-    ctx.fillText("Klik Layar buat Ulang", 85, canvas.height/2 + 30);
+    ctx.fillText("Tap Layar buat Ulang", 90, canvas.height/2 + 30);
 }
 
 // --- FUNGSI MENANG ---
 function gameWin() {
     isGameWon = true;
-    if(bgm) bgm.pause(); // Matikan lagu pas menang
+    if(bgm) bgm.pause();
     
     ctx.fillStyle = "rgba(0,0,0,0.8)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -177,21 +168,35 @@ function gameWin() {
     
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
-    ctx.fillText("Klik Layar buat Lanjut...", 70, canvas.height/2 + 20);
+    ctx.fillText("Tap Layar buat Lanjut...", 70, canvas.height/2 + 20);
 }
 
-// --- CONTROLLER ---
-window.addEventListener("click", function(e) {
+// --- CONTROLLER (KHUSUS MOBILE & PC) ---
+
+function handleInput(e) {
+    // 1. Cek jangan sampe nge-tap tombol UI
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.tagName === 'SELECT') {
+        return; 
+    }
+
+    // 2. Kalo HP, matiin fungsi scroll/zoom default biar ga ganggu
+    if (e.type === 'touchstart') {
+        e.preventDefault(); 
+    }
+
+    // 3. Logika Game
     if (isGameOver) {
         location.reload(); 
     } else if (isGameWon) {
         window.location.href = 'next-level.html'; 
     } else {
-        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'SELECT') {
-            bird.flap();
-        }
+        bird.flap();
     }
-});
+}
+
+// Listener ganda: Buat PC (click) dan HP (touchstart)
+window.addEventListener("click", handleInput);
+window.addEventListener("touchstart", handleInput, {passive: false});
 
 document.addEventListener("keydown", function(e) {
     if (e.code === "Space") {

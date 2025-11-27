@@ -110,4 +110,9 @@ canvas {
     background-color: #70c5ce; /* Warna langit siang */
     display: block;
     margin: 0 auto;
+    
+    /* --- FITUR MOBILE (RESPONSIF) --- */
+    max-width: 100%;       /* Mentok lebar layar HP */
+    max-height: 80vh;      /* Mentok 80% tinggi layar biar ga ketutupan address bar */
+    touch-action: none;    /* Matiin zoom/scroll pas nyentuh canvas */
 }
