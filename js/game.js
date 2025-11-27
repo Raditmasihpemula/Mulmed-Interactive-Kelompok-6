@@ -5,21 +5,19 @@ const ctx = canvas.getContext("2d");
 let frames = 0;
 let score = 0;
 let isGameOver = false;
-let isGameWon = false; // Status menang
+let isGameWon = false; 
 
 // 1. AMBIL DATA DARI HALAMAN SEBELUMNYA
 const selectedChar = localStorage.getItem('selectedChar') || 'char1';
-const difficulty = localStorage.getItem('gameDifficulty') || 'easy';
+// Default ke easy jaga-jaga, tapi harusnya udah ke-handle di html
+const difficulty = localStorage.getItem('gameDifficulty') || 'easy'; 
 
-// 2. SETTING TARGET SKOR (LOGIKA MODE)
+// 2. SETTING TARGET SKOR
 let targetScore = 10;
 if (difficulty === 'normal') targetScore = 15;
 if (difficulty === 'hard') targetScore = 25;
 
-// NOTE: Mapping folder temen udah dipindah ke 'next-level.html'
-// Jadi di sini gak perlu lagi.
-
-// --- LOGIKA WARNA KARAKTER (NANTI GANTI FOTO) ---
+// --- LOGIKA WARNA KARAKTER ---
 const charColors = {
     'char1': 'red', 'char2': 'blue', 'char3': 'green', 'char4': 'yellow'
 };
@@ -38,6 +36,8 @@ const bird = {
     update: function() {
         this.velocity += this.gravity;
         this.y += this.velocity;
+        
+        // Cek Nabrak Tanah
         if (this.y + this.h >= canvas.height) {
             this.y = canvas.height - this.h;
             gameOver();
@@ -57,8 +57,8 @@ const pipes = {
         for (let i = 0; i < this.position.length; i++) {
             let p = this.position[i];
             ctx.fillStyle = "#2ecc71";
-            ctx.fillRect(p.x, 0, this.w, p.y); // Atas
-            ctx.fillRect(p.x, p.y + this.gap, this.w, canvas.height - p.y - this.gap); // Bawah
+            ctx.fillRect(p.x, 0, this.w, p.y); 
+            ctx.fillRect(p.x, p.y + this.gap, this.w, canvas.height - p.y - this.gap);
         }
     },
     
@@ -80,12 +80,12 @@ const pipes = {
                 gameOver();
             }
             
-            // SKOR BERTAMBAH & CEK MENANG
+            // SKOR BERTAMBAH
             if (p.x + this.w <= 0) {
                 this.position.shift();
                 score++;
                 
-                // --- CEK KONDISI MENANG DI SINI ---
+                // CEK MENANG
                 if (score >= targetScore) {
                     gameWin();
                 }
@@ -101,14 +101,13 @@ function draw() {
     bird.draw();
     pipes.draw();
     
-    // Tampilan Skor & Target
     ctx.fillStyle = "white";
     ctx.font = "16px 'Press Start 2P'";
     ctx.fillText(`Score: ${score}/${targetScore}`, 10, 30);
 }
 
 function update() {
-    if (isGameOver || isGameWon) return; // Stop update kalau kalah/menang
+    if (isGameOver || isGameWon) return; 
     bird.update();
     pipes.update();
 }
@@ -128,41 +127,46 @@ function gameOver() {
     ctx.fillStyle = "white";
     ctx.fillText("GAME OVER", 80, canvas.height/2);
     ctx.font = "10px sans-serif";
-    ctx.fillText("Klik buat ulang", 110, canvas.height/2 + 30);
+    ctx.fillText("Klik Layar buat Ulang", 85, canvas.height/2 + 30);
 }
 
-// --- FUNGSI MENANG (LANJUT LEVEL) ---
+// --- FUNGSI MENANG ---
 function gameWin() {
     isGameWon = true;
     
-    // Tampilan Menang
     ctx.fillStyle = "rgba(0,0,0,0.8)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#f1c40f"; // Warna Emas
+    ctx.fillStyle = "#f1c40f"; 
     ctx.font = "20px 'Press Start 2P'";
     ctx.fillText("LEVEL CLEAR!", 50, canvas.height/2 - 20);
     
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
-    ctx.fillText("Klik untuk lanjut...", 80, canvas.height/2 + 20);
+    ctx.fillText("Klik Layar buat Lanjut...", 70, canvas.height/2 + 20);
 }
 
-// --- CONTROLLER (YANG DIUBAH BAGIAN INI) ---
-canvas.addEventListener("click", function() {
+// --- CONTROLLER (YANG BIKIN STUCK UDAH DI FIX DISINI) ---
+
+// Ganti canvas.addEventListener jadi window.addEventListener
+// Biar lu klik dimanapun (di luar kotak game) tetep respon
+window.addEventListener("click", function(e) {
     if (isGameOver) {
         location.reload(); 
     } else if (isGameWon) {
-        // Redirect ke HALAMAN SELEBRASI dulu (next-level.html)
+        // Redirect ke Next Level
         window.location.href = 'next-level.html'; 
     } else {
-        bird.flap();
+        // Logic biar ga loncat kalo ngeklik tombol UI lain
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A' && e.target.tagName !== 'SELECT') {
+            bird.flap();
+        }
     }
 });
 
 document.addEventListener("keydown", function(e) {
     if (e.code === "Space") {
         if (isGameOver) location.reload();
-        else if (isGameWon) window.location.href = 'next-level.html'; // Kesini juga
+        else if (isGameWon) window.location.href = 'next-level.html';
         else bird.flap();
     }
 });
