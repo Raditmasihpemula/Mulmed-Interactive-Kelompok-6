@@ -19,10 +19,10 @@ if (difficulty === 'hard') targetScore = 25;
 // 3. MAPPING FOLDER TEMEN (PENTING BIAR GA NYASAR)
 // Sesuaikan nama folder sama yang lu bikin di Langkah 1
 const nextLevelPaths = {
-    'char1': 'game-lanjutan/radit/index.html',
-    'char2': 'game-lanjutan/temen_a/index.html',
-    'char3': 'game-lanjutan/temen_b/index.html',
-    'char4': 'game-lanjutan/temen_c/index.html'
+    'char1': 'game-lanjutan/Adrian/index.html',
+    'char2': 'game-lanjutan/Deni/index.html',
+    'char3': 'game-lanjutan/Radit/index.html',
+    'char4': 'game-lanjutan/Umar/index.html'
 };
 
 // --- LOGIKA WARNA KARAKTER (NANTI GANTI FOTO) ---
