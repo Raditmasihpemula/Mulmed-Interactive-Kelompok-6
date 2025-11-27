@@ -10,32 +10,6 @@
 <body>
 
     <div class="container">
-        <h1>PILIH HERO</h1>
-        <p class="subtitle">Siapa yang bakal main?</p>
-        
-        <div class="char-grid">
-            <div class="char-card" onclick="selectChar('char1')">
-                <div class="pixel-placeholder" style="background: red;"></div>
-                <p>Adrian Panji R</p>
-            </div>
-            
-            <div class="char-card" onclick="selectChar('char2')">
-                <div class="pixel-placeholder" style="background: blue;"></div>
-                <p>Deni Nawal A</p>
-            </div>
-
-            <div class="char-card" onclick="selectChar('char3')">
-                <div class="pixel-placeholder" style="background: green;"></div>
-                <p>Umar Mukhtar</p>
-            </div>
-            
-            <div class="char-card" onclick="selectChar('char4')">
-                <div class="pixel-placeholder" style="background: yellow;"></div>
-                <p>Radit Restu J</p>
-            </div>
-        </div>
-
-        <div class="container">
         <h1>PILIH HERO & MODE</h1>
         
         <div class="mode-select" style="margin-bottom: 20px;">
@@ -52,28 +26,29 @@
         <div class="char-grid">
             <div class="char-card" onclick="selectChar('char1')">
                 <div class="pixel-placeholder" style="background: red;"></div>
-                <p>Radit</p>
+                <p>Adrian Panji R</p>
             </div>
             
             <div class="char-card" onclick="selectChar('char2')">
                 <div class="pixel-placeholder" style="background: blue;"></div>
-                <p>Temen A</p>
+                <p>Deni Nawal A</p>
+            </div>
+
+            <div class="char-card" onclick="selectChar('char3')">
+                <div class="pixel-placeholder" style="background: green;"></div>
+                <p>Radit Restu J</p>
             </div>
             
-            </div>
+            <div class="char-card" onclick="selectChar('char4')">
+                <div class="pixel-placeholder" style="background: yellow;"></div>
+                <p>Umar Mukhtar</p>
+            </div>  
+        </div> 
+        <br> <a href="index.html" class="btn-back">KEMBALI</a>
 
-        <a href="index.html" class="btn-back">KEMBALI</a>
-    </div>
-
-        <a href="index.html" class="btn-back">KEMBALI</a>
     </div>
 
     <script>
-//        function selectChar(characterId) {
-            // Simpan pilihan ke memori browser
-//            localStorage.setItem('selectedChar', characterId);
-            // Lempar ke halaman game
-//            window.location.href = 'game.html'; }
         function selectChar(characterId) {
             // 1. Ambil nilai difficulty dari dropdown
             const diff = document.getElementById('difficulty').value;
