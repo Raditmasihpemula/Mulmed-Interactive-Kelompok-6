@@ -14,7 +14,7 @@ sfxDie.volume = 0.8;
 
 // Ambil elemen BGM dari HTML
 const bgm = document.getElementById("bgm");
-if(bgm) bgm.volume = 0.5; 
+if(bgm) bgm.volume = 0.1; 
 
 // --- SETUP VARIABLE ---
 let frames = 0;
