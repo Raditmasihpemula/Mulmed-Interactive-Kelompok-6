@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Karakter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>PILIH HERO</h1>
+        <p class="subtitle">Siapa yang bakal main?</p>
+        
+        <div class="char-grid">
+            <div class="char-card" onclick="selectChar('char1')">
+                <div class="pixel-placeholder" style="background: red;"></div>
+                <p>Radit</p>
+            </div>
+            
+            <div class="char-card" onclick="selectChar('char2')">
+                <div class="pixel-placeholder" style="background: blue;"></div>
+                <p>Temen A</p>
+            </div>
+
+            <div class="char-card" onclick="selectChar('char3')">
+                <div class="pixel-placeholder" style="background: green;"></div>
+                <p>Temen B</p>
+            </div>
+            
+            <div class="char-card" onclick="selectChar('char4')">
+                <div class="pixel-placeholder" style="background: yellow;"></div>
+                <p>Temen C</p>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn-back">KEMBALI</a>
+    </div>
+
+    <script>
+        function selectChar(characterId) {
+            // Simpan pilihan ke memori browser
+            localStorage.setItem('selectedChar', characterId);
+            // Lempar ke halaman game
+            window.location.href = 'game.html';
+        }
+    </script>
+
+</body>
+</html>
