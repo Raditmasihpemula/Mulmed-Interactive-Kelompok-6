@@ -7,48 +7,73 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* Style Tambahan Khusus Halaman Ini */
+        /* --- STYLE KHUSUS HALAMAN INI --- */
+        
         .winner-box {
             background-color: #27ae60;
             padding: 20px;
             border: 4px solid white;
             box-shadow: 10px 10px 0px #000;
             animation: bounce 1s infinite alternate;
+            margin-bottom: 20px;
         }
 
         .char-display {
             width: 100px;
             height: 100px;
-            margin: 20px auto;
+            margin: 0 auto 20px auto;
             border: 4px solid black;
-            /* Ini buat nengahin gambar pixel nanti */
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: white; 
         }
 
-        /* Buat nampilin gambar pixel pixel */
         .char-display img {
             width: 100%;
             height: 100%;
-            image-rendering: pixelated; /* Biar gambar ga buram pas digedein */
+            image-rendering: pixelated;
         }
 
+        /* --- PERBAIKAN TOMBOL BIAR RAPI --- */
         .btn-group {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
+            display: flex;           /* Pakai Flexbox */
+            justify-content: center; /* Tengah Horizontal */
+            align-items: center;     /* Tengah Vertikal */
+            gap: 20px;               /* Jarak antar tombol */
             margin-top: 30px;
+            width: 100%;
         }
 
-        .btn-next {
-            background-color: #f1c40f;
-            color: black;
-            padding: 15px;
+        /* Style dasar buat SEMUA tombol di halaman ini */
+        .pixel-btn {
+            font-family: 'Press Start 2P', cursive;
+            padding: 15px 20px;
             text-decoration: none;
             border: 2px solid white;
             box-shadow: 4px 4px 0px black;
+            font-size: 10px; /* Ukuran font disamain */
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.1s;
+            text-transform: uppercase;
+        }
+
+        /* Warna Tombol */
+        .btn-red {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-yellow {
+            background-color: #f1c40f;
+            color: black;
+        }
+
+        /* Efek pas diklik */
+        .pixel-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px black;
         }
 
         @keyframes bounce {
@@ -62,31 +87,31 @@
     <div class="container">
         <div class="winner-box">
             <h1>STAGE CLEAR!</h1>
-            <p>Hebat!!! <span id="playerName">Player</span>!</p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">GG Gaming, <span id="playerName">Player</span>!</p>
         </div>
 
         <div class="char-display" id="charDisplay">
             </div>
 
-        <p class="subtitle">Siap lanjut ke stage berikutnya?</p>
+        <p class="subtitle" style="font-size: 0.7rem; line-height: 1.5;">Siap lanjut ke dunia temen lu?</p>
 
         <div class="btn-group">
-            <a href="index.html" class="btn-back" style="background: #e74c3c;">KEMBALI</a>
-            <button onclick="goToNextLevel()" class="btn-next">LANJUT &gt;&gt;</button>
+            <a href="index.html" class="pixel-btn btn-red">KEMBALI</a>
+            <button onclick="goToNextLevel()" class="pixel-btn btn-yellow">LANJUT >></button>
         </div>
     </div>
 
     <script>
-        // 1. Ambil Data Karakter yang dipilih dari Memory
+        // 1. Ambil Data
         const selectedChar = localStorage.getItem('selectedChar') || 'char1';
 
-        // 2. Database Karakter (Nama, Warna/Gambar, Link Tujuan)
+        // 2. Database Karakter
         const charData = {
             'char1': {
                 name: "Adrian Panji R",
                 color: "red", 
-                img: "assets/sprites/adrian_face.png", // Ganti path ini nanti kalo udah ada gambar
-                nextLink: "game-lanjutan/Adrian/index.html"
+                img: "assets/sprites/adrian_face.png",
+                nextLink: "game-lanjutan/Adrian/index.html" // Sesuaikan nama folder lu
             },
             'char2': {
                 name: "Deni Nawal A",
@@ -108,25 +133,30 @@
             }
         };
 
-        // 3. Tampilin Data ke Layar
+        // 3. Render Data
         const data = charData[selectedChar];
-        document.getElementById('playerName').innerText = data.name;
-
-        // LOGIKA GAMBAR VS WARNA
-        // Nanti kalau gambar udah siap, uncomment baris image, comment baris color
-        const displayBox = document.getElementById('charDisplay');
         
-        // --- OPSI 1: Pake Warna Dulu (Sementara) ---
-        displayBox.style.backgroundColor = data.color;
-        
-        // --- OPSI 2: Pake Gambar (Aktifin ini nanti kalo aset dah ada) ---
-        // displayBox.innerHTML = `<img src="${data.img}" alt="${data.name}">`;
-        // displayBox.style.backgroundColor = "transparent";
+        // Cek dulu datanya ada ga (biar ga error kalo cache browser nyangkut)
+        if (data) {
+            document.getElementById('playerName').innerText = data.name;
 
+            const displayBox = document.getElementById('charDisplay');
+            
+            // --- MODE WARNA (Default) ---
+            displayBox.style.backgroundColor = data.color;
+            
+            // --- MODE GAMBAR (Aktifin kalo udah ada file gambarnya) ---
+            // displayBox.innerHTML = `<img src="${data.img}" alt="${data.name}">`;
+            // displayBox.style.backgroundColor = "transparent";
+        }
 
-        // 4. Fungsi Tombol Lanjut
+        // 4. Logic Tombol Lanjut
         function goToNextLevel() {
-            window.location.href = data.nextLink;
+            if (data && data.nextLink) {
+                window.location.href = data.nextLink;
+            } else {
+                alert("Folder game temen lu belum ada! Cek nama folder di kodingan.");
+            }
         }
     </script>
 </body>
