@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Selesai!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Style Tambahan Khusus Halaman Ini */
+        .winner-box {
+            background-color: #27ae60;
+            padding: 20px;
+            border: 4px solid white;
+            box-shadow: 10px 10px 0px #000;
+            animation: bounce 1s infinite alternate;
+        }
+
+        .char-display {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+            border: 4px solid black;
+            /* Ini buat nengahin gambar pixel nanti */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white; 
+        }
+
+        /* Buat nampilin gambar pixel pixel */
+        .char-display img {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated; /* Biar gambar ga buram pas digedein */
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-next {
+            background-color: #f1c40f;
+            color: black;
+            padding: 15px;
+            text-decoration: none;
+            border: 2px solid white;
+            box-shadow: 4px 4px 0px black;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="winner-box">
+            <h1>STAGE CLEAR!</h1>
+            <p>Hebat!!! <span id="playerName">Player</span>!</p>
+        </div>
+
+        <div class="char-display" id="charDisplay">
+            </div>
+
+        <p class="subtitle">Siap lanjut ke stage berikutnya?</p>
+
+        <div class="btn-group">
+            <a href="index.html" class="btn-back" style="background: #e74c3c;">KEMBALI</a>
+            <button onclick="goToNextLevel()" class="btn-next">LANJUT &gt;&gt;</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Ambil Data Karakter yang dipilih dari Memory
+        const selectedChar = localStorage.getItem('selectedChar') || 'char1';
+
+        // 2. Database Karakter (Nama, Warna/Gambar, Link Tujuan)
+        const charData = {
+            'char1': {
+                name: "Adrian Panji R",
+                color: "red", 
+                img: "assets/sprites/adrian_face.png", // Ganti path ini nanti kalo udah ada gambar
+                nextLink: "game-lanjutan/radit/index.html"
+            },
+            'char2': {
+                name: "Deni Nawal A",
+                color: "blue",
+                img: "assets/sprites/deni_face.png",
+                nextLink: "game-lanjutan/temen_a/index.html"
+            },
+            'char3': {
+                name: "Radit Restu J",
+                color: "green",
+                img: "assets/sprites/radit_face.png",
+                nextLink: "game-lanjutan/temen_b/index.html"
+            },
+            'char4': {
+                name: "Umar Mukhtar",
+                color: "yellow",
+                img: "assets/sprites/umar_face.png",
+                nextLink: "game-lanjutan/temen_c/index.html"
+            }
+        };
+
+        // 3. Tampilin Data ke Layar
+        const data = charData[selectedChar];
+        document.getElementById('playerName').innerText = data.name;
+
+        // LOGIKA GAMBAR VS WARNA
+        // Nanti kalau gambar udah siap, uncomment baris image, comment baris color
+        const displayBox = document.getElementById('charDisplay');
+        
+        // --- OPSI 1: Pake Warna Dulu (Sementara) ---
+        displayBox.style.backgroundColor = data.color;
+        
+        // --- OPSI 2: Pake Gambar (Aktifin ini nanti kalo aset dah ada) ---
+        // displayBox.innerHTML = `<img src="${data.img}" alt="${data.name}">`;
+        // displayBox.style.backgroundColor = "transparent";
+
+
+        // 4. Fungsi Tombol Lanjut
+        function goToNextLevel() {
+            window.location.href = data.nextLink;
+        }
+    </script>
+</body>
+</html>

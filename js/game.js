@@ -16,14 +16,8 @@ let targetScore = 10;
 if (difficulty === 'normal') targetScore = 15;
 if (difficulty === 'hard') targetScore = 25;
 
-// 3. MAPPING FOLDER TEMEN (PENTING BIAR GA NYASAR)
-// Sesuaikan nama folder sama yang lu bikin di Langkah 1
-const nextLevelPaths = {
-    'char1': 'game-lanjutan/Adrian/index.html',
-    'char2': 'game-lanjutan/Deni/index.html',
-    'char3': 'game-lanjutan/Radit/index.html',
-    'char4': 'game-lanjutan/Umar/index.html'
-};
+// NOTE: Mapping folder temen udah dipindah ke 'next-level.html'
+// Jadi di sini gak perlu lagi.
 
 // --- LOGIKA WARNA KARAKTER (NANTI GANTI FOTO) ---
 const charColors = {
@@ -150,16 +144,16 @@ function gameWin() {
     
     ctx.fillStyle = "white";
     ctx.font = "12px sans-serif";
-    ctx.fillText("Klik untuk lanjut ke Level Temen Lu...", 40, canvas.height/2 + 20);
+    ctx.fillText("Klik untuk lanjut...", 80, canvas.height/2 + 20);
 }
 
-// --- CONTROLLER ---
+// --- CONTROLLER (YANG DIUBAH BAGIAN INI) ---
 canvas.addEventListener("click", function() {
     if (isGameOver) {
         location.reload(); 
     } else if (isGameWon) {
-        // Redirect ke folder temen sesuai karakter
-        window.location.href = nextLevelPaths[selectedChar]; 
+        // Redirect ke HALAMAN SELEBRASI dulu (next-level.html)
+        window.location.href = 'next-level.html'; 
     } else {
         bird.flap();
     }
@@ -168,7 +162,7 @@ canvas.addEventListener("click", function() {
 document.addEventListener("keydown", function(e) {
     if (e.code === "Space") {
         if (isGameOver) location.reload();
-        else if (isGameWon) window.location.href = nextLevelPaths[selectedChar];
+        else if (isGameWon) window.location.href = 'next-level.html'; // Kesini juga
         else bird.flap();
     }
 });
