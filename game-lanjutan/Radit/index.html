@@ -3,105 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RaditCraft 2D</title>
+    <title>RaditCraft 2D - Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #2c3e50;
-            font-family: 'Press Start 2P', cursive;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        #game-container {
-            position: relative;
-            border: 4px solid white;
-            box-shadow: 10px 10px 0 black;
-        }
-
-        canvas {
-            display: block;
-            background-color: #87CEEB; /* Warna Langit */
-            cursor: crosshair;
-        }
-
-        #ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            text-shadow: 2px 2px 0 black;
-            pointer-events: none;
-        }
-
-        #inventory {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 5px;
-            background: rgba(0,0,0,0.5);
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        .slot {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #555;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.6rem;
-            cursor: pointer;
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .slot.active {
-            border-color: yellow;
-            background: rgba(255,255,0,0.2);
-            transform: scale(1.1);
-        }
-
-        .btn-back {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #e74c3c;
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            font-size: 0.7rem;
-            border: 2px solid white;
-            box-shadow: 2px 2px 0 black;
-        }
+        body { margin: 0; overflow: hidden; background-color: #2c3e50; font-family: 'Press Start 2P', cursive; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #game-container { position: relative; border: 4px solid white; box-shadow: 10px 10px 0 black; }
+        canvas { display: block; background-color: #87CEEB; cursor: crosshair; }
+        #ui { position: absolute; top: 10px; left: 10px; color: white; text-shadow: 2px 2px 0 black; pointer-events: none; }
+        #inventory { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 5px; }
+        .slot { width: 40px; height: 40px; border: 2px solid #555; display: flex; justify-content: center; align-items: center; font-size: 0.6rem; cursor: pointer; background: rgba(255,255,255,0.1); color: white; }
+        .slot.active { border-color: yellow; background: rgba(255,255,0,0.2); transform: scale(1.1); }
+        .btn-back { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; padding: 10px; text-decoration: none; font-size: 0.7rem; border: 2px solid white; box-shadow: 2px 2px 0 black; }
     </style>
 </head>
 <body>
 
     <div id="game-container">
         <canvas id="gameCanvas" width="800" height="600"></canvas>
-        
         <div id="ui">
-            <p>RADITCRAFT 2D</p>
+            <p>MineMine-2D</p>
             <p style="font-size: 0.6rem; margin-top:5px;">WASD: Jalan/Lompat</p>
             <p style="font-size: 0.6rem;">Klik Kiri: Hancurin</p>
             <p style="font-size: 0.6rem;">Klik Kanan: Pasang</p>
         </div>
-
         <div id="inventory">
             <div class="slot active" onclick="selectBlock(1)" style="background: #795548;">TANAH</div>
             <div class="slot" onclick="selectBlock(2)" style="background: #757575;">BATU</div>
             <div class="slot" onclick="selectBlock(3)" style="background: #8D6E63;">KAYU</div>
             <div class="slot" onclick="selectBlock(4)" style="background: #2E7D32;">DAUN</div>
         </div>
-
         <a href="../../index.html" class="btn-back">KELUAR</a>
     </div>
 
@@ -109,19 +39,11 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // --- KONFIGURASI DUNIA ---
         const TILE_SIZE = 40;
         const ROWS = 15; 
         const COLS = 20; 
         
-        const BLOCKS = {
-            0: null, 
-            1: '#795548', // Tanah 
-            2: '#5D4037', // Rumput 
-            3: '#757575', // Batu 
-            4: '#8D6E63', // Kayu 
-            5: '#2E7D32'  // Daun 
-        };
+        const BLOCKS = { 0: null, 1: '#795548', 2: '#5D4037', 3: '#757575', 4: '#8D6E63', 5: '#2E7D32' };
 
         let map = [];
         let selectedBlock = 1; 
@@ -130,13 +52,9 @@
             for (let r = 0; r < ROWS; r++) {
                 let row = [];
                 for (let c = 0; c < COLS; c++) {
-                    if (r < 10) {
-                        row.push(0); 
-                    } else if (r === 10) {
-                        row.push(2); 
-                    } else if (r > 10) {
-                        row.push(Math.random() > 0.8 ? 3 : 1);
-                    }
+                    if (r < 10) row.push(0); 
+                    else if (r === 10) row.push(2); 
+                    else row.push(Math.random() > 0.8 ? 3 : 1);
                 }
                 map.push(row);
             }
@@ -156,25 +74,15 @@
             map[groundRow-5][col] = 5;
         }
 
-        // --- PLAYER ---
         const player = {
-            x: 100,
-            y: 100,
-            width: 24, 
-            height: 36,
-            vx: 0,
-            vy: 0,
-            speed: 4,
-            jump: -10,
-            gravity: 0.5,
+            x: 100, y: 100,
+            width: 24, height: 36,
+            vx: 0, vy: 0,
+            speed: 5, jump: -12, gravity: 0.6,
             grounded: false
         };
 
-        const keys = {
-            d: false,
-            a: false,
-            w: false
-        };
+        const keys = { d: false, a: false, w: false };
 
         window.addEventListener('keydown', e => {
             if (e.key === 'd' || e.key === 'D') keys.d = true;
@@ -201,16 +109,14 @@
             const r = Math.floor(mouseY / TILE_SIZE);
 
             if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
-                if (e.button === 0) { 
-                    map[r][c] = 0;
-                } else if (e.button === 2) { 
-                    if (!isPlayerOverlapping(c, r)) {
+                if (e.button === 0) map[r][c] = 0;
+                else if (e.button === 2) { 
+                    if (!checkRectCollision(c*TILE_SIZE, r*TILE_SIZE, TILE_SIZE, TILE_SIZE, player.x, player.y, player.width, player.height)) {
                         map[r][c] = selectedBlock;
                     }
                 }
             }
         });
-
         canvas.addEventListener('contextmenu', e => e.preventDefault());
 
         function selectBlock(id) {
@@ -222,68 +128,62 @@
             });
         }
 
-        function isPlayerOverlapping(c, r) {
-            const tileX = c * TILE_SIZE;
-            const tileY = r * TILE_SIZE;
-            return (
-                player.x < tileX + TILE_SIZE &&
-                player.x + player.width > tileX &&
-                player.y < tileY + TILE_SIZE &&
-                player.y + player.height > tileY
-            );
+        // FUNGSI UTAMA CEK TABRAKAN (DISEDERHANAKAN)
+        function getTileAt(x, y) {
+            const c = Math.floor(x / TILE_SIZE);
+            const r = Math.floor(y / TILE_SIZE);
+            if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return 0;
+            return map[r][c];
         }
 
-        // --- BAGIAN INI YANG DIPERBAIKI (COLLISION FIX) ---
-        function checkCollision(newX, newY) {
-            // Kita kasih margin error (epsilon) biar gak lengket
-            // Cek sedikit lebih dalam dari sisi luar player (0.1 pixel)
-            const startX = newX + 0.1;
-            const endX = newX + player.width - 0.1;
-            const startY = newY + 0.1;
-            const endY = newY + player.height - 0.1; // Ini kuncinya, kaki dicek dikit ke atas
-
-            const corners = [
-                {x: startX, y: startY}, // Kiri Atas
-                {x: endX, y: startY},   // Kanan Atas
-                {x: startX, y: endY},   // Kiri Bawah
-                {x: endX, y: endY}      // Kanan Bawah
+        // Cek apakah Kotak A nabrak tile padat
+        function isSolid(x, y, w, h) {
+            const points = [
+                {x: x, y: y},                  // Kiri Atas
+                {x: x + w - 0.1, y: y},        // Kanan Atas
+                {x: x, y: y + h - 0.1},        // Kiri Bawah
+                {x: x + w - 0.1, y: y + h - 0.1} // Kanan Bawah
             ];
-
-            for (let point of corners) {
-                const c = Math.floor(point.x / TILE_SIZE);
-                const r = Math.floor(point.y / TILE_SIZE);
-
-                if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
-                    if (map[r][c] !== 0) return true; 
-                }
+            for (let p of points) {
+                if (getTileAt(p.x, p.y) !== 0) return true;
             }
             return false;
         }
 
+        // Cek apakah 2 kotak saling tumpang tindih (buat mouse click)
+        function checkRectCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+            return (x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2);
+        }
+
         function update() {
-            // Horizontal Movement
+            // --- GERAK HORIZONTAL (X) ---
             if (keys.d) player.vx = player.speed;
             else if (keys.a) player.vx = -player.speed;
             else player.vx = 0;
 
-            if (!checkCollision(player.x + player.vx, player.y)) {
-                player.x += player.vx;
+            let nextX = player.x + player.vx;
+
+            // TRICK FIX: Pas cek samping, KAKI DIANGKAT DIKIT (h - 2)
+            // Biar ga dianggap nabrak lantai pas jalan
+            if (!isSolid(nextX, player.y, player.width, player.height - 2)) {
+                player.x = nextX;
             }
 
-            // Vertical Movement
+            // --- GERAK VERTICAL (Y) ---
             player.vy += player.gravity;
-            
-            if (!checkCollision(player.x, player.y + player.vy)) {
-                player.y += player.vy;
+            let nextY = player.y + player.vy;
+
+            // Cek atas bawah normal (Full Height)
+            if (!isSolid(player.x, nextY, player.width, player.height)) {
+                player.y = nextY;
                 player.grounded = false;
             } else {
-                if (player.vy > 0) { // Jatuh & Nabrak Bawah
+                if (player.vy > 0) { // Jatuh ke lantai
                     player.grounded = true;
-                    // Snap posisi pas di atas blok biar rapi
-                    // Rumus: (Baris blok * Ukuran Tile) - Tinggi Player
-                    const r = Math.floor((player.y + player.height) / TILE_SIZE);
+                    // Snap posisi pas di atas blok
+                    const r = Math.floor((player.y + player.height + player.vy) / TILE_SIZE);
                     player.y = r * TILE_SIZE - player.height;
-                } else if (player.vy < 0) { // Jeduk Atas
+                } else if (player.vy < 0) { // Jeduk atap
                     player.vy = 0;
                 }
                 player.vy = 0;
@@ -292,16 +192,13 @@
             // Batas Layar
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-            if (player.y > canvas.height) { 
-                player.x = 100;
-                player.y = 100;
-                player.vy = 0;
-            }
+            if (player.y > canvas.height) { player.x = 100; player.y = 100; player.vy = 0; }
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Gambar Map
             for (let r = 0; r < ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
                     const blockId = map[r][c];
@@ -314,6 +211,7 @@
                 }
             }
 
+            // Gambar Player
             ctx.fillStyle = "#00BCD4"; 
             ctx.fillRect(player.x, player.y, player.width, player.height);
             ctx.fillStyle = "#FFCC80"; 
