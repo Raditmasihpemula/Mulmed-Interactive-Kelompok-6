@@ -89,7 +89,7 @@
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         
         <div id="ui">
-            <p>MineMine-2D</p>
+            <p>RADITCRAFT 2D</p>
             <p style="font-size: 0.6rem; margin-top:5px;">WASD: Jalan/Lompat</p>
             <p style="font-size: 0.6rem;">Klik Kiri: Hancurin</p>
             <p style="font-size: 0.6rem;">Klik Kanan: Pasang</p>
@@ -111,55 +111,43 @@
 
         // --- KONFIGURASI DUNIA ---
         const TILE_SIZE = 40;
-        const ROWS = 15; // Tinggi dunia (15 blok)
-        const COLS = 20; // Lebar dunia (20 blok)
+        const ROWS = 15; 
+        const COLS = 20; 
         
-        // Tipe Blok & Warnanya
         const BLOCKS = {
-            0: null, // Udara
-            1: '#795548', // Tanah (Dirt)
-            2: '#5D4037', // Tanah Rumput (Grass)
-            3: '#757575', // Batu (Stone)
-            4: '#8D6E63', // Kayu (Wood)
-            5: '#2E7D32'  // Daun (Leaves)
+            0: null, 
+            1: '#795548', // Tanah 
+            2: '#5D4037', // Rumput 
+            3: '#757575', // Batu 
+            4: '#8D6E63', // Kayu 
+            5: '#2E7D32'  // Daun 
         };
 
-        // Peta Dunia (Array 2D)
-        // Kita generate otomatis biar seru
         let map = [];
-        let selectedBlock = 1; // Default: Tanah
+        let selectedBlock = 1; 
 
         function generateWorld() {
             for (let r = 0; r < ROWS; r++) {
                 let row = [];
                 for (let c = 0; c < COLS; c++) {
-                    // Logic sederhana: 
-                    // Baris 0-9: Udara
-                    // Baris 10: Rumput
-                    // Baris 11-14: Tanah/Batu
                     if (r < 10) {
                         row.push(0); 
                     } else if (r === 10) {
-                        row.push(2); // Rumput
+                        row.push(2); 
                     } else if (r > 10) {
-                        // Random Batu atau Tanah
                         row.push(Math.random() > 0.8 ? 3 : 1);
                     }
                 }
                 map.push(row);
             }
-
-            // Bikin Pohon (Manual dikit biar estetik)
             createTree(5, 10);
             createTree(14, 10);
         }
 
         function createTree(col, groundRow) {
-            // Batang
             map[groundRow-1][col] = 4;
             map[groundRow-2][col] = 4;
             map[groundRow-3][col] = 4;
-            // Daun
             map[groundRow-3][col-1] = 5;
             map[groundRow-3][col+1] = 5;
             map[groundRow-4][col] = 5;
@@ -172,7 +160,7 @@
         const player = {
             x: 100,
             y: 100,
-            width: 24, // Lebih kecil dari tile biar gampang masuk lubang
+            width: 24, 
             height: 36,
             vx: 0,
             vy: 0,
@@ -188,7 +176,6 @@
             w: false
         };
 
-        // --- INPUT HANDLER ---
         window.addEventListener('keydown', e => {
             if (e.key === 'd' || e.key === 'D') keys.d = true;
             if (e.key === 'a' || e.key === 'A') keys.a = true;
@@ -198,7 +185,6 @@
                     player.grounded = false;
                 }
             }
-            // Shortcut pilih blok 1-4
             if (['1','2','3','4'].includes(e.key)) selectBlock(parseInt(e.key));
         });
 
@@ -207,22 +193,17 @@
             if (e.key === 'a' || e.key === 'A') keys.a = false;
         });
 
-        // Mouse Events (Mining & Placing)
         canvas.addEventListener('mousedown', e => {
             const rect = canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
-
-            // Konversi posisi mouse ke koordinat Grid
             const c = Math.floor(mouseX / TILE_SIZE);
             const r = Math.floor(mouseY / TILE_SIZE);
 
-            // Validasi biar ga error array
             if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
-                if (e.button === 0) { // Klik Kiri (Hancurin)
+                if (e.button === 0) { 
                     map[r][c] = 0;
-                } else if (e.button === 2) { // Klik Kanan (Pasang)
-                    // Ga boleh pasang di tempat player berdiri (biar ga nyangkut)
+                } else if (e.button === 2) { 
                     if (!isPlayerOverlapping(c, r)) {
                         map[r][c] = selectedBlock;
                     }
@@ -230,27 +211,20 @@
             }
         });
 
-        // Matiin menu klik kanan default browser
         canvas.addEventListener('contextmenu', e => e.preventDefault());
 
         function selectBlock(id) {
-            // Mapping ID blok: 1=Tanah, 2=Batu, 3=Kayu, 4=Daun (ID Inventory beda dikit mappingnya buat variasi)
-            const mapInv = [1, 3, 4, 5]; // Tanah, Batu, Kayu, Daun
+            const mapInv = [1, 3, 4, 5]; 
             selectedBlock = mapInv[id-1];
-            
-            // Update UI
             document.querySelectorAll('.slot').forEach((el, idx) => {
                 el.classList.remove('active');
                 if (idx === id-1) el.classList.add('active');
             });
         }
 
-        // --- PHYSICS & COLLISION ---
         function isPlayerOverlapping(c, r) {
-            // Cek apakah kotak player nabrak kotak tile [r][c]
             const tileX = c * TILE_SIZE;
             const tileY = r * TILE_SIZE;
-            
             return (
                 player.x < tileX + TILE_SIZE &&
                 player.x + player.width > tileX &&
@@ -259,22 +233,28 @@
             );
         }
 
+        // --- BAGIAN INI YANG DIPERBAIKI (COLLISION FIX) ---
         function checkCollision(newX, newY) {
-            // Cek sudut-sudut player
+            // Kita kasih margin error (epsilon) biar gak lengket
+            // Cek sedikit lebih dalam dari sisi luar player (0.1 pixel)
+            const startX = newX + 0.1;
+            const endX = newX + player.width - 0.1;
+            const startY = newY + 0.1;
+            const endY = newY + player.height - 0.1; // Ini kuncinya, kaki dicek dikit ke atas
+
             const corners = [
-                {x: newX, y: newY}, // Kiri Atas
-                {x: newX + player.width, y: newY}, // Kanan Atas
-                {x: newX, y: newY + player.height}, // Kiri Bawah
-                {x: newX + player.width, y: newY + player.height} // Kanan Bawah
+                {x: startX, y: startY}, // Kiri Atas
+                {x: endX, y: startY},   // Kanan Atas
+                {x: startX, y: endY},   // Kiri Bawah
+                {x: endX, y: endY}      // Kanan Bawah
             ];
 
             for (let point of corners) {
                 const c = Math.floor(point.x / TILE_SIZE);
                 const r = Math.floor(point.y / TILE_SIZE);
 
-                // Kalau keluar map atau kena blok padat (bukan 0)
                 if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
-                    if (map[r][c] !== 0) return true; // Tabrakan!
+                    if (map[r][c] !== 0) return true; 
                 }
             }
             return false;
@@ -286,69 +266,58 @@
             else if (keys.a) player.vx = -player.speed;
             else player.vx = 0;
 
-            // Cek Tabrakan Horizontal
             if (!checkCollision(player.x + player.vx, player.y)) {
                 player.x += player.vx;
             }
 
-            // Vertical Movement (Gravity)
+            // Vertical Movement
             player.vy += player.gravity;
             
-            // Cek Tabrakan Vertical
             if (!checkCollision(player.x, player.y + player.vy)) {
                 player.y += player.vy;
                 player.grounded = false;
             } else {
-                // Kalo lagi jatuh dan nabrak => berarti napak tanah
-                if (player.vy > 0) player.grounded = true;
-                player.vy = 0; // Stop jatuh
-                
-                // Snap posisi biar pas di atas kotak
-                player.y = Math.round(player.y); 
+                if (player.vy > 0) { // Jatuh & Nabrak Bawah
+                    player.grounded = true;
+                    // Snap posisi pas di atas blok biar rapi
+                    // Rumus: (Baris blok * Ukuran Tile) - Tinggi Player
+                    const r = Math.floor((player.y + player.height) / TILE_SIZE);
+                    player.y = r * TILE_SIZE - player.height;
+                } else if (player.vy < 0) { // Jeduk Atas
+                    player.vy = 0;
+                }
+                player.vy = 0;
             }
 
             // Batas Layar
             if (player.x < 0) player.x = 0;
             if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-            if (player.y > canvas.height) { // Jatuh ke jurang = Respawn
+            if (player.y > canvas.height) { 
                 player.x = 100;
                 player.y = 100;
                 player.vy = 0;
             }
         }
 
-        // --- RENDERING ---
         function draw() {
-            // Clear Screen
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Gambar Map
             for (let r = 0; r < ROWS; r++) {
                 for (let c = 0; c < COLS; c++) {
                     const blockId = map[r][c];
                     if (blockId !== 0) {
                         ctx.fillStyle = BLOCKS[blockId];
                         ctx.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                        
-                        // Garis pinggir blok biar keliatan kotak2
                         ctx.strokeStyle = "rgba(0,0,0,0.1)";
                         ctx.strokeRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                     }
                 }
             }
 
-            // 2. Gambar Player (Steve KW Super)
-            // Badan
-            ctx.fillStyle = "#00BCD4"; // Baju Biru
+            ctx.fillStyle = "#00BCD4"; 
             ctx.fillRect(player.x, player.y, player.width, player.height);
-            // Kepala
-            ctx.fillStyle = "#FFCC80"; // Kulit
+            ctx.fillStyle = "#FFCC80"; 
             ctx.fillRect(player.x + 2, player.y - 8, 20, 20);
-            
-            // 3. Highlight Mouse (Kotak seleksi)
-            // Ini logic tambahan biar user tau dia mau ngeklik blok mana
-            // Kita pake event mousemove manual di otak user :v
-            // Ga usah divisualin dulu biar enteng
         }
 
         function loop() {
@@ -357,7 +326,6 @@
             requestAnimationFrame(loop);
         }
 
-        // --- MULAI GAME ---
         generateWorld();
         loop();
 
