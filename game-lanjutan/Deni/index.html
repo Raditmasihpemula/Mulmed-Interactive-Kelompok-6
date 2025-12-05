@@ -1,6 +1,1187 @@
 <!DOCTYPE html>
 <html lang="id">
-    <body>
-        <h1>lanjutan Deni</h1>
-    </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-main: #080b14;
+      --bg-card: rgba(10, 14, 28, 0.92);
+      --accent: #ffd54a;
+      --accent-soft: rgba(255, 213, 74, 0.18);
+      --accent-strong: #ffb300;
+      --primary: #00d4ff;
+      --text-main: #f5f7ff;
+      --text-muted: #a7b0d4;
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --danger: #ff5252;
+      --success: #4caf50;
+      --radius-lg: 24px;
+      --radius-md: 999px;
+      --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.55);
+      --transition-fast: 0.18s ease-out;
+      --transition-med: 0.25s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0, 212, 255, 0.24), transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(255, 213, 74, 0.20), transparent 55%),
+        radial-gradient(circle at 50% 120%, rgba(82, 109, 255, 0.28), transparent 60%),
+        var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-card {
+      width: 100%;
+      max-width: 780px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(9, 12, 26, 0.98), rgba(9, 12, 32, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow-soft);
+      padding: 28px 28px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      opacity: 0.16;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.5), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(255, 213, 74, 0.5), transparent 45%),
+        radial-gradient(circle at 50% 100%, rgba(82, 109, 255, 0.6), transparent 60%);
+      filter: blur(3px);
+      pointer-events: none;
+    }
+
+    .app-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 0%, var(--accent), transparent 55%),
+                  radial-gradient(circle at 80% 120%, var(--primary), transparent 55%),
+                  #050610;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      font-size: 16px;
+      color: #050610;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-name {
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: rgba(167, 176, 212, 0.9);
+    }
+
+    .status-pill {
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: radial-gradient(circle at 0% 0%, rgba(255, 213, 74, 0.16), transparent 60%);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 8px rgba(255, 213, 74, 0.8);
+    }
+
+    /* START SCREEN */
+
+    .start-screen {
+      text-align: center;
+      padding: 32px 16px 10px;
+    }
+
+    .start-tagline {
+      font-size: 13px;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: rgba(167, 176, 212, 0.95);
+      margin-bottom: 16px;
+    }
+
+    .start-title {
+      font-size: clamp(32px, 4vw, 40px);
+      margin: 0 0 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-shadow: 0 0 18px rgba(255, 213, 74, 0.6);
+    }
+
+    .start-subtitle {
+      margin: 0 0 32px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .start-subtitle span {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .start-button-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      border-radius: var(--radius-md);
+      padding: 12px 24px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+        background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast),
+        opacity 0.15s ease-out;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+      color: #2b2300;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 224, 130, 0.9);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7);
+      background: linear-gradient(135deg, #ffd95e, #ffe082);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+    }
+
+    .btn-secondary {
+      background: rgba(11, 16, 36, 0.92);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(17, 22, 48, 0.98);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 11px;
+    }
+
+    .start-meta {
+      font-size: 11px;
+      color: rgba(167, 176, 212, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .meta-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(5, 7, 18, 0.9);
+    }
+
+    .meta-pill strong {
+      color: var(--accent);
+      margin-right: 4px;
+    }
+
+    /* TOPIC SCREEN */
+
+    .topic-screen {
+      padding: 6px 0 4px;
+    }
+
+    .topic-header {
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .topic-title {
+      margin: 0 0 4px;
+      font-size: 22px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .topic-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 24px 0 16px;
+    }
+
+    @media (max-width: 720px) {
+      .topic-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .topic-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: radial-gradient(circle at 15% 0%, rgba(0, 212, 255, 0.18), transparent 60%),
+                  radial-gradient(circle at 80% 120%, rgba(255, 213, 74, 0.18), transparent 60%),
+                  rgba(7, 10, 26, 0.96);
+      padding: 14px 10px 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+                  border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .topic-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.75);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .topic-label {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #fdf9e7;
+      margin-bottom: 4px;
+    }
+
+    .topic-meta {
+      font-size: 10px;
+      color: rgba(167, 176, 212, 0.95);
+    }
+
+    .topic-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .topic-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .topic-hint-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: var(--accent);
+    }
+
+    .topic-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    /* QUIZ SCREEN */
+
+    .quiz-screen {
+      padding-top: 4px;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .topic-pill {
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 213, 74, 0.18), transparent 55%),
+                  rgba(5, 7, 18, 0.94);
+    }
+
+    .topic-pill-badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(0, 212, 255, 0.18);
+      color: var(--primary);
+      font-size: 10px;
+    }
+
+    .quiz-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 140px;
+    }
+
+    .quiz-progress-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      width: 0;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width var(--transition-med);
+    }
+
+    .quiz-body {
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      background: radial-gradient(circle at 20% 0%, rgba(0, 212, 255, 0.16), transparent 65%),
+                  radial-gradient(circle at 80% 110%, rgba(255, 213, 74, 0.16), transparent 65%),
+                  rgba(4, 6, 17, 0.96);
+      padding: 18px 18px 14px;
+      margin-bottom: 16px;
+    }
+
+    .question-label {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(167, 176, 212, 0.9);
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 0 0 16px;
+      color: var(--text-main);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-btn {
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(8, 11, 26, 0.96);
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-size: 14px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast),
+                  box-shadow var(--transition-fast), border-color var(--transition-fast),
+                  color var(--transition-fast);
+    }
+
+    .option-key {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(7, 9, 20, 0.98);
+    }
+
+    .option-label {
+      flex: 1;
+    }
+
+    .option-btn:hover:not(.option-disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.8);
+      border-color: rgba(0, 212, 255, 0.8);
+      background: radial-gradient(circle at 0% 0%, rgba(0, 212, 255, 0.16), transparent 60%),
+                  rgba(8, 11, 26, 0.98);
+    }
+
+    .option-selected {
+      border-color: rgba(0, 212, 255, 0.95);
+      background: radial-gradient(circle at 0% 0%, rgba(0, 212, 255, 0.21), transparent 60%),
+                  rgba(8, 11, 26, 1);
+    }
+
+    .option-correct {
+      border-color: rgba(76, 175, 80, 0.95);
+      background: radial-gradient(circle at 0% 0%, rgba(76, 175, 80, 0.2), transparent 60%),
+                  rgba(8, 15, 22, 1);
+    }
+
+    .option-wrong {
+      border-color: rgba(255, 82, 82, 0.95);
+      background: radial-gradient(circle at 0% 0%, rgba(255, 82, 82, 0.20), transparent 60%),
+                  rgba(14, 8, 12, 1);
+    }
+
+    .option-disabled {
+      pointer-events: none;
+      opacity: 0.92;
+    }
+
+    .quiz-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .score-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(5, 7, 18, 0.96);
+    }
+
+    .score-value {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .btn-next {
+      min-width: 140px;
+    }
+
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .quiz-nav {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* RESULT SCREEN */
+
+    .result-screen {
+      padding-top: 10px;
+      text-align: center;
+    }
+
+    .result-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .result-topic {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .result-summary {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .result-score-badge {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 10px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: radial-gradient(circle at 0% 0%, rgba(0, 212, 255, 0.18), transparent 60%),
+                  rgba(4, 6, 17, 0.98);
+      margin-bottom: 16px;
+    }
+
+    .result-score-main {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .result-score-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .result-note {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Utility */
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="app-card">
+      <div class="app-inner">
+        <header class="app-header">
+          <div class="brand">
+            <div class="brand-logo">QZ</div>
+            <div class="brand-text">
+              <div class="brand-name">QUIZ GAMES</div>
+              <div class="brand-subtitle">Interaktif & edukatif, terinspirasi dari slide Anda</div>
+            </div>
+          </div>
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            LIVE QUIZ MODE
+          </div>
+        </header>
+
+        <!-- START SCREEN -->
+        <section id="screen-start" class="screen start-screen active">
+          <div class="start-tagline">WELCOME</div>
+          <h1 class="start-title">START THE QUIZ</h1>
+          <p class="start-subtitle">
+            Jawab berbagai pertanyaan seru dari beberapa topik. Pilih <span>TEKNOLOGI</span>,
+            <span>MATEMATIKA</span>, <span>IPA</span>, atau <span>SEJARAH</span>.
+          </p>
+
+          <div class="start-button-wrap">
+            <button id="btn-start" class="btn btn-primary">
+              Mulai Sekarang
+            </button>
+            <button id="btn-start-topic" class="btn btn-secondary">
+              Lihat Pilihan Topik
+            </button>
+          </div>
+
+          <div class="start-meta">
+            <div class="meta-pill">
+              <strong>4</strong> Topik utama
+            </div>
+            <div class="meta-pill">
+              <strong>2</strong> Soal TEKNOLOGI (dari PPTX)
+            </div>
+          </div>
+        </section>
+
+        <!-- TOPIC SCREEN -->
+        <section id="screen-topics" class="screen topic-screen">
+          <div class="topic-header">
+            <h2 class="topic-title">PILIH TOPIK</h2>
+            <p class="topic-subtitle">
+              Sentuh salah satu kotak topik di bawah ini untuk memulai kuis.
+            </p>
+          </div>
+
+          <div class="topic-grid">
+            <button class="topic-card" data-topic="teknologi">
+              <div class="topic-label">TEKNOLOGI</div>
+              <div class="topic-meta">Jaringan, perangkat keras, & komputer.</div>
+              <div class="topic-footer">
+                <div class="topic-hint">
+                  <span class="topic-hint-icon">?</span>
+                  2 soal diambil dari PPTX Anda.
+                </div>
+              </div>
+            </button>
+
+            <button class="topic-card" data-topic="matematika">
+              <div class="topic-label">MATEMATIKA</div>
+              <div class="topic-meta">Operasi dasar & logika angka.</div>
+            </button>
+
+            <button class="topic-card" data-topic="ipa">
+              <div class="topic-label">IPA</div>
+              <div class="topic-meta">Sains dasar & fenomena alam.</div>
+            </button>
+
+            <button class="topic-card" data-topic="sejarah">
+              <div class="topic-label">SEJARAH</div>
+              <div class="topic-meta">Tokoh & peristiwa penting.</div>
+            </button>
+          </div>
+
+          <div class="topic-footer">
+            <div class="topic-hint">
+              <span class="topic-hint-icon">i</span>
+              TEKNOLOGI berisi 2 soal persis seperti di file PPTX.
+            </div>
+            <div class="topic-actions">
+              <button id="btn-topic-back" class="btn btn-secondary btn-small">
+                Kembali
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- QUIZ SCREEN -->
+        <section id="screen-quiz" class="screen quiz-screen">
+          <div class="quiz-header">
+            <div class="topic-pill">
+              <span id="topic-pill-text">TEKNOLOGI</span>
+              <span class="topic-pill-badge" id="topic-pill-badge">2 SOAL</span>
+            </div>
+            <div class="quiz-progress">
+              <div class="quiz-progress-label">
+                <span id="progress-label">Soal 1</span>
+                <span id="progress-count">1 / 2</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quiz-body">
+            <div class="question-label">PERTANYAAN</div>
+            <p class="question-text" id="question-text">
+              <!-- diisi lewat JavaScript -->
+            </p>
+
+            <div id="options-container" class="options-grid">
+              <!-- opsi dibuat via JavaScript -->
+            </div>
+          </div>
+
+          <div class="quiz-footer">
+            <div class="score-chip">
+              Skor sementara:
+              <span class="score-value" id="score-preview">0</span>
+              /
+              <span id="score-total">0</span>
+            </div>
+            <button id="btn-next" class="btn btn-primary btn-next" disabled>
+              Soal berikutnya
+            </button>
+          </div>
+
+          <div class="quiz-nav">
+            <button id="btn-change-topic" class="btn btn-secondary btn-small">
+              Pilih Topik Lain
+            </button>
+            <span style="font-size: 11px; color: var(--text-muted);">
+              Pilih jawaban terlebih dahulu untuk melanjutkan.
+            </span>
+          </div>
+        </section>
+
+        <!-- RESULT SCREEN -->
+        <section id="screen-result" class="screen result-screen">
+          <h2 class="result-title">HASIL QUIZ</h2>
+          <div id="result-topic" class="result-topic">TOPIK: TEKNOLOGI</div>
+          <p id="result-summary" class="result-summary"></p>
+
+          <div class="result-score-badge">
+            <div id="result-score-main" class="result-score-main">0%</div>
+            <div id="result-score-sub" class="result-score-sub">
+              0 jawaban benar dari 0 soal
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button id="btn-retry-topic" class="btn btn-primary btn-small">
+              Ulangi Topik Ini
+            </button>
+            <button id="btn-result-topics" class="btn btn-secondary btn-small">
+              Pilih Topik Lain
+            </button>
+          </div>
+
+          <div class="result-note">
+            Soal TEKNOLOGI mengikuti teks asli dari slide PPTX Anda.
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==============================
+    // DATA QUIZ
+    // ==============================
+
+    const quizData = {
+      teknologi: {
+        label: "TEKNOLOGI",
+        questions: [
+          {
+            // Diambil dari slide 3 PPTX
+            question:
+              "Protokol manakah yang digunakan untuk mengamankan komunikasi data melalui jaringan komputer …",
+            options: ["HTTP", "FTP", "SMTP", "HTTPS"],
+            correctIndex: 3
+          },
+          {
+            // Diambil dari slide 4 PPTX
+            question:
+              'Komponen komputer manakah yang bersifat "Volatile” ...',
+            options: ["ROM", "RAM", "SSD", "HDD"],
+            correctIndex: 1
+          }
+        ]
+      },
+      matematika: {
+        label: "MATEMATIKA",
+        questions: [
+          {
+            question: "Hasil dari 12 × 8 adalah …",
+            options: ["80", "88", "96", "108"],
+            correctIndex: 2
+          },
+          {
+            question: "Nilai 3² + 4² adalah …",
+            options: ["12", "18", "25", "30"],
+            correctIndex: 2
+          }
+        ]
+      },
+      ipa: {
+        label: "IPA",
+        questions: [
+          {
+            question:
+              "Perubahan wujud air dari cair menjadi gas disebut …",
+            options: ["Membeku", "Menguap", "Mencair", "Mengembun"],
+            correctIndex: 1
+          },
+          {
+            question:
+              "Bagian tumbuhan yang berfungsi menyerap air dan mineral dari tanah adalah …",
+            options: ["Batang", "Daun", "Akar", "Bunga"],
+            correctIndex: 2
+          }
+        ]
+      },
+      sejarah: {
+        label: "SEJARAH",
+        questions: [
+          {
+            question:
+              "Proklamasi Kemerdekaan Indonesia dibacakan pada tanggal …",
+            options: [
+              "17 Agustus 1945",
+              "17 Agustus 1949",
+              "10 November 1945",
+              "1 Juni 1945"
+            ],
+            correctIndex: 0
+          },
+          {
+            question:
+              "Tokoh yang membacakan teks Proklamasi Kemerdekaan Indonesia adalah …",
+            options: [
+              "Moh. Hatta",
+              "Ir. Soekarno",
+              "Jenderal Sudirman",
+              "B.J. Habibie"
+            ],
+            correctIndex: 1
+          }
+        ]
+      }
+    };
+
+    // ==============================
+    // STATE
+    // ==============================
+
+    let currentTopicKey = null;
+    let currentQuestionIndex = 0;
+    let currentScore = 0;
+    let hasAnsweredCurrent = false;
+
+    // ==============================
+    // ELEMENT REFERENCES
+    // ==============================
+
+    const screens = {
+      start: document.getElementById("screen-start"),
+      topics: document.getElementById("screen-topics"),
+      quiz: document.getElementById("screen-quiz"),
+      result: document.getElementById("screen-result")
+    };
+
+    const btnStart = document.getElementById("btn-start");
+    const btnStartTopic = document.getElementById("btn-start-topic");
+    const btnTopicBack = document.getElementById("btn-topic-back");
+
+    const topicCards = document.querySelectorAll(".topic-card");
+
+    const topicPillText = document.getElementById("topic-pill-text");
+    const topicPillBadge = document.getElementById("topic-pill-badge");
+    const progressLabel = document.getElementById("progress-label");
+    const progressCount = document.getElementById("progress-count");
+    const progressFill = document.getElementById("progress-fill");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options-container");
+    const scorePreview = document.getElementById("score-preview");
+    const scoreTotal = document.getElementById("score-total");
+    const btnNext = document.getElementById("btn-next");
+    const btnChangeTopic = document.getElementById("btn-change-topic");
+
+    const resultTopic = document.getElementById("result-topic");
+    const resultSummary = document.getElementById("result-summary");
+    const resultScoreMain = document.getElementById("result-score-main");
+    const resultScoreSub = document.getElementById("result-score-sub");
+    const btnRetryTopic = document.getElementById("btn-retry-topic");
+    const btnResultTopics = document.getElementById("btn-result-topics");
+
+    // ==============================
+    // SCREEN HANDLING
+    // ==============================
+
+    function showScreen(name) {
+      Object.values(screens).forEach((el) => el.classList.remove("active"));
+      if (screens[name]) {
+        screens[name].classList.add("active");
+      }
+    }
+
+    // ==============================
+    // QUIZ LOGIC
+    // ==============================
+
+    function startTopic(topicKey) {
+      currentTopicKey = topicKey;
+      currentQuestionIndex = 0;
+      currentScore = 0;
+      hasAnsweredCurrent = false;
+
+      const topic = quizData[topicKey];
+      const totalQuestions = topic.questions.length;
+
+      topicPillText.textContent = topic.label;
+      topicPillBadge.textContent = `${totalQuestions} SOAL`;
+      scoreTotal.textContent = String(totalQuestions);
+      scorePreview.textContent = "0";
+
+      renderQuestion();
+      showScreen("quiz");
+    }
+
+    function renderQuestion() {
+      const topic = quizData[currentTopicKey];
+      const questionObj = topic.questions[currentQuestionIndex];
+
+      hasAnsweredCurrent = false;
+      btnNext.disabled = true;
+
+      const indexDisplay = currentQuestionIndex + 1;
+      const totalQuestions = topic.questions.length;
+
+      progressLabel.textContent = `Soal ${indexDisplay}`;
+      progressCount.textContent = `${indexDisplay} / ${totalQuestions}`;
+
+      const progressPercent = (indexDisplay / totalQuestions) * 100;
+      progressFill.style.width = `${progressPercent}%`;
+
+      questionTextEl.textContent = questionObj.question;
+
+      optionsContainer.innerHTML = "";
+
+      const optionKeys = ["A", "B", "C", "D"];
+
+      questionObj.options.forEach((opt, index) => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.dataset.index = index;
+
+        const keySpan = document.createElement("span");
+        keySpan.className = "option-key";
+        keySpan.textContent = optionKeys[index] || "?";
+
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "option-label";
+        labelSpan.textContent = opt;
+
+        button.appendChild(keySpan);
+        button.appendChild(labelSpan);
+
+        button.addEventListener("click", () =>
+          handleOptionClick(index, button)
+        );
+
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    function handleOptionClick(selectedIndex, selectedButton) {
+      if (hasAnsweredCurrent) return;
+      hasAnsweredCurrent = true;
+
+      const topic = quizData[currentTopicKey];
+      const questionObj = topic.questions[currentQuestionIndex];
+      const correctIndex = questionObj.correctIndex;
+
+      const optionButtons = optionsContainer.querySelectorAll(".option-btn");
+      optionButtons.forEach((btn) => {
+        const idx = Number(btn.dataset.index);
+        btn.classList.add("option-disabled");
+
+        if (idx === correctIndex) {
+          btn.classList.add("option-correct");
+        }
+      });
+
+      if (selectedIndex === correctIndex) {
+        currentScore += 1;
+        selectedButton.classList.add("option-selected");
+      } else {
+        selectedButton.classList.add("option-wrong");
+      }
+
+      scorePreview.textContent = String(currentScore);
+      btnNext.disabled = false;
+    }
+
+    function goToNextQuestion() {
+      const topic = quizData[currentTopicKey];
+      const totalQuestions = topic.questions.length;
+
+      if (currentQuestionIndex < totalQuestions - 1) {
+        currentQuestionIndex += 1;
+        renderQuestion();
+      } else {
+        // selesai topik
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const topic = quizData[currentTopicKey];
+      const totalQuestions = topic.questions.length;
+      const correct = currentScore;
+      const scorePercent = Math.round((correct / totalQuestions) * 100);
+
+      resultTopic.textContent = `TOPIK: ${topic.label}`;
+      resultSummary.textContent = `Anda menjawab ${correct} dari ${totalQuestions} soal dengan benar.`;
+
+      resultScoreMain.textContent = `${scorePercent}%`;
+      resultScoreSub.textContent = `${correct} jawaban benar dari ${totalQuestions} soal`;
+
+      showScreen("result");
+    }
+
+    // ==============================
+    // EVENT BINDING
+    // ==============================
+
+    btnStart.addEventListener("click", () => {
+      showScreen("topics");
+    });
+
+    btnStartTopic.addEventListener("click", () => {
+      showScreen("topics");
+    });
+
+    btnTopicBack.addEventListener("click", () => {
+      showScreen("start");
+    });
+
+    topicCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const topicKey = card.dataset.topic;
+        startTopic(topicKey);
+      });
+    });
+
+    btnNext.addEventListener("click", () => {
+      goToNextQuestion();
+    });
+
+    btnChangeTopic.addEventListener("click", () => {
+      showScreen("topics");
+    });
+
+    btnRetryTopic.addEventListener("click", () => {
+      if (currentTopicKey) {
+        startTopic(currentTopicKey);
+      } else {
+        showScreen("topics");
+      }
+    });
+
+    btnResultTopics.addEventListener("click", () => {
+      showScreen("topics");
+    });
+
+    // ==============================
+    // INIT
+    // ==============================
+
+    // Tidak ada inisialisasi tambahan, default di layar START
+  </script>
+</body>
 </html>
