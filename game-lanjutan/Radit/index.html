@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tracker Dashboard</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="top">
+        <div>
+          <div class="badge"><span class="dot"></span> Tracker Dashboard</div>
+          <h1>Productivity Tools</h1>
+          <p>Set redirect → generate link tracker → copy link → (opsional) pendekkan manual di shortlink.</p>
+        </div>
+
+        <div class="row row-top">
+          <a class="btn ghost" href="../index.html">← Landing</a>
+          <a class="btn" href="./log.html">Cek Log</a>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- SHORTLINK -->
+        <div class="panel">
+          <h2>Shortlink</h2>
+          <p class="sub">Buka website shortlink kamu.</p>
+          <div class="row">
+            <a class="btn primary" href="https://s.kecilin.site/" target="_blank" rel="noopener">
+              Buka s.kecilin.site
+            </a>
+          </div>
+          <div class="note">
+            Kalau mau bikin “short URL” untuk link tracker, <b>salin link tracker</b> dari panel sebelah,
+            lalu pendekkan manual di sini dengan label yang jelas.
+          </div>
+        </div>
+
+        <!-- TRACKER SETUP -->
+        <div class="panel">
+          <h2>Tracker</h2>
+          <p class="sub">Atur redirect tujuan. Link tracker akan menuju <code>track.html</code>.</p>
+
+          <label for="to">Redirect URL</label>
+          <input id="to" placeholder="https://example.com" />
+
+          <div class="row">
+            <button id="save" class="primary" type="button">Simpan Default</button>
+            <button id="gen" type="button">Generate Link</button>
+            <button id="clear" class="ghost" type="button">Reset</button>
+          </div>
+
+          <div id="result" class="out" aria-live="polite">Belum ada link.</div>
+
+          <div class="row">
+            <button id="copy" disabled type="button">Copy Link</button>
+            <a id="openTrack" class="btn" href="./track.html">Buka Tracker</a>
+          </div>
+
+          <div class="note">
+            Gunakan fitur lokasi hanya untuk user yang <b>setuju</b> dan paham bahwa lokasi akan tersimpan.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/app.js"></script>
+</body>
+</html>
