@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Productivity Hub</title>
+  <title>PDF Shorter</title>
   <link rel="stylesheet" href="./assets/style.css" />
 </head>
 <body>
@@ -11,67 +11,16 @@
     <section class="card">
       <div class="top">
         <div>
-          <div class="badge"><span class="dot"></span> Productivity Hub</div>
-          <h1>Shortlink + PDF Resizer</h1>
-          <p>GitHub Pages + Supabase. Shortlink bisa custom slug & expired.</p>
+          <div class="badge"><span class="dot"></span> PDF Shorter</div>
+          <h1>PDF Resizer / Compressor</h1>
+          <p>Kompress PDF langsung di browser (client-side). Output diraster (gambar).</p>
         </div>
       </div>
 
-      <div class="tabs">
-        <button class="tab active" data-tab="short">Shortlink</button>
-        <button class="tab" data-tab="pdf">PDF Resizer</button>
-      </div>
-
-      <!-- SHORTLINK -->
-      <div id="tab-short" class="grid">
+      <div class="grid">
         <div class="panel">
-          <h2>Buat Shortlink</h2>
-          <p class="sub">Masukkan URL panjang → optional custom slug → optional expired.</p>
-
-          <label>URL Tujuan</label>
-          <input id="longUrl" placeholder="https://example.com" />
-
-          <label>Custom Slug (optional)</label>
-          <input id="customSlug" placeholder="mis: promo2025" />
-          <small>Karakter: a-z, 0-9, - (3–32)</small>
-
-          <label>Expired (optional)</label>
-          <input id="expiresAt" type="datetime-local" />
-          <small>Kosongkan jika tidak ingin expired.</small>
-
-          <div class="row">
-            <button id="createBtn" class="primary" type="button">Create</button>
-            <button id="checkBtn" class="ghost" type="button">Cek Slug</button>
-          </div>
-
-          <div id="shortOut" class="out">Belum ada link.</div>
-
-          <div class="row">
-            <button id="copyBtn" disabled type="button">Copy</button>
-            <a id="openBtn" class="btn" href="#" target="_blank" rel="noopener">Open</a>
-          </div>
-
-          <div class="note">
-            Short URL kamu berbentuk <code>.../&lt;repo&gt;/s/&lt;slug&gt;</code> (redirect via <code>404.html</code> root).
-          </div>
-        </div>
-
-        <div class="panel">
-          <h2>Cara Kerja Redirect</h2>
-          <p class="sub">Saat orang buka <code>/s/slug</code>, GitHub Pages mengarah ke <code>404.html</code> root, lalu script cek Supabase dan redirect.</p>
-          <div class="out" style="min-height:auto">
-- Jika slug tidak ada → “Not found”
-- Jika expired → “Expired”
-- Jika valid → redirect ke URL tujuan
-          </div>
-        </div>
-      </div>
-
-      <!-- PDF -->
-      <div id="tab-pdf" class="grid hidden">
-        <div class="panel">
-          <h2>PDF Resizer / Compressor</h2>
-          <p class="sub">Kompress dengan render ulang halaman (hasil jadi gambar/raster).</p>
+          <h2>Compress</h2>
+          <p class="sub">Pilih PDF → atur scale & quality → compress → download.</p>
 
           <label>Pilih PDF</label>
           <input id="pdfFile" type="file" accept="application/pdf" />
@@ -93,6 +42,7 @@
 
           <div class="note">
             Catatan: metode ini meraster halaman → teks/vector bisa jadi tidak selectable.
+            Cocok untuk PDF scan / banyak gambar.
           </div>
         </div>
 
@@ -101,22 +51,18 @@
           <div class="out" style="min-height:auto">
 - Ukuran kecil: scale 0.8–1.0 + quality 0.55–0.70
 - Tetap jelas: scale 1.2–1.5 + quality 0.75–0.85
+- Kalau file masih besar: turunkan scale dulu, baru turunkan quality
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
-  <!-- pdf.js UMD (IMPORTANT) -->
+  <!-- pdf.js UMD -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
   <!-- pdf-lib -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
-  <script src="./assets/config.js"></script>
-  <script src="./assets/app.js"></script>
+  <script src="./assets/pdf.js"></script>
 </body>
 </html>

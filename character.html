@@ -1,74 +1,72 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Karakter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pilih Karakter</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>PILIH HERO & MODE</h1>
-        
-        <div class="mode-select" style="margin-bottom: 20px;">
-            <label for="difficulty" style="display:block; margin-bottom:10px; color: yellow;">Tingkat Kesulitan (Wajib):</label>
-            
-            <select id="difficulty" style="padding: 10px; font-family: 'Press Start 2P'; cursor: pointer;">
-                <option value="" disabled selected>-- PILIH LEVEL DULU --</option>
-                <option value="easy">Easy (10 Pipa)</option>
-                <option value="normal">Normal (15 Pipa)</option>
-                <option value="hard">Hard (25 Pipa)</option>
-            </select>
-        </div>
+  <div class="container">
+    <h1>PILIH HERO & MODE</h1>
 
-        <p class="subtitle">Klik Karakter buat Mulai:</p>
-        
-        <div class="char-grid">
-            <div class="char-card" onclick="selectChar('char1')">
-                <div class="pixel-placeholder" style="background: red;"></div>
-                <p>Adrian Panji R</p>
-            </div>
-            
-            <div class="char-card" onclick="selectChar('char2')">
-                <div class="pixel-placeholder" style="background: blue;"></div>
-                <p>Deni Nawal A</p>
-            </div>
+    <div class="mode-select" style="margin-bottom: 20px;">
+      <label for="difficulty" style="display:block; margin-bottom:10px; color: yellow;">
+        Tingkat Kesulitan (Wajib):
+      </label>
 
-            <div class="char-card" onclick="selectChar('char3')">
-                <div class="pixel-placeholder" style="background: green;"></div>
-                <p>Radit Restu J</p>
-            </div>
-            
-            <div class="char-card" onclick="selectChar('char4')">
-                <div class="pixel-placeholder" style="background: yellow;"></div>
-                <p>Umar Mukhtar</p>
-            </div>  
-        </div> 
-
-        <br>
-        <a href="index.html" class="btn-back">KEMBALI</a>
+      <select id="difficulty" style="padding: 10px; font-family: 'Press Start 2P'; cursor: pointer;">
+        <option value="" disabled selected>-- PILIH LEVEL DULU --</option>
+        <option value="easy">Easy (10 Pipa)</option>
+        <option value="normal">Normal (15 Pipa)</option>
+        <option value="hard">Hard (25 Pipa)</option>
+      </select>
     </div>
 
-    <script>
-        function selectChar(characterId) {
-            // 1. Ambil nilai difficulty
-            const diff = document.getElementById('difficulty').value;
-            
-            // 2. VALIDASI: Kalau masih kosong (belum milih), marahin user
-            if (diff === "") {
-                alert("Woi, pilih tingkat kesulitan dulu di atas! 👆");
-                return; // Stop, jangan lanjut
-            }
-            
-            // 3. Simpan Karakter & Difficulty ke LocalStorage
-            localStorage.setItem('selectedChar', characterId);
-            localStorage.setItem('gameDifficulty', diff);
-            
-            // 4. Gas ke game
-            window.location.href = 'game.html';
-        }
-    </script>
+    <p class="subtitle">Klik Karakter buat Mulai:</p>
+
+    <div class="char-grid">
+      <div class="char-card" onclick="selectChar('char1')">
+        <img class="char-sprite" src="assets/img/char1.png" alt="Adrian Panji R">
+        <p>Adrian Panji R</p>
+      </div>
+
+      <div class="char-card" onclick="selectChar('char2')">
+        <img class="char-sprite" src="assets/img/char2.png" alt="Deni Nawal A">
+        <p>Deni Nawal A</p>
+      </div>
+
+      <div class="char-card" onclick="selectChar('char3')">
+        <img class="char-sprite" src="assets/img/char3.png" alt="Radit Restu J">
+        <p>Radit Restu J</p>
+      </div>
+
+      <div class="char-card" onclick="selectChar('char4')">
+        <img class="char-sprite" src="assets/img/char4.png" alt="Umar Mukhtar">
+        <p>Umar Mukhtar</p>
+      </div>
+    </div>
+
+    <br>
+    <a href="index.html" class="btn-back">KEMBALI</a>
+  </div>
+
+  <script>
+    function selectChar(characterId) {
+      const diff = document.getElementById('difficulty').value;
+
+      if (!diff) {
+        alert("Woi, pilih tingkat kesulitan dulu di atas! 👆");
+        return;
+      }
+
+      localStorage.setItem('selectedChar', characterId);
+      localStorage.setItem('gameDifficulty', diff);
+
+      window.location.href = 'game.html';
+    }
+  </script>
 </body>
 </html>

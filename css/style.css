@@ -116,3 +116,12 @@ canvas {
     max-height: 80vh;      /* Mentok 80% tinggi layar biar ga ketutupan address bar */
     touch-action: none;    /* Matiin zoom/scroll pas nyentuh canvas */
 }
+
+.char-sprite{
+  width: 60px;
+  height: 60px;
+  display: block;
+  margin: 0 auto 10px auto;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
