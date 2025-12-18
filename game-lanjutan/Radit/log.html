@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Log Lokasi - Supabase</title>
+  <style>
+    :root { color-scheme: dark light; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #4f46e5 0, #020617 45%, #000 100%);
+      color:#e5e7eb;
+      padding:24px;
+    }
+    .card{
+      max-width:1100px; margin:0 auto;
+      background: rgba(15, 23, 42, 0.95);
+      border:1px solid rgba(148, 163, 184, 0.3);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 25px 60px rgba(0,0,0,.6);
+    }
+    h1{margin:0 0 8px;font-size:1.25rem}
+    p{margin:0 0 12px;color:#9ca3af;font-size:.92rem;line-height:1.45}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+    a.btn{
+      padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(99, 102, 241, 0.35);
+      background: rgba(99, 102, 241, 0.18);
+      color:#e5e7eb;font-weight:800;font-size:.9rem;
+      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:0.86rem;
+      overflow:hidden;
+      border-radius:12px;
+    }
+    th, td{
+      border:1px solid rgba(148,163,184,.25);
+      padding:8px 10px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{
+      background: rgba(2,6,23,.45);
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    td code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      font-size:.82rem;
+    }
+    .muted{color:#9ca3af}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="row">
+      <a class="btn" href="./">Home</a>
+    </div>
+
+    <h1>Log Lokasi</h1>
+    <p>Data diambil dari tabel <code>locations</code> di Supabase kamu.</p>
+
+    <table id="log-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Waktu (UTC)</th>
+          <th>Lat</th>
+          <th>Lon</th>
+          <th>Accuracy (m)</th>
+          <th>User Agent</th>
+          <th>Maps</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="7" class="muted">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    // ====== GANTI 2 BARIS INI DENGAN PUNYAMU ======
+    const SUPABASE_URL = "https://yfwnfaocsswqerhgxkto.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmd25mYW9jc3N3cWVyaGd4a3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNjE3MTksImV4cCI6MjA4MDgzNzcxOX0.8ADF4wgcEv_lI2qOPcDt1OujckrIBoDYE52wIE8YZEM";
+    // ==============================================
+
+    const client = supabase.createClient(https://yfwnfaocsswqerhgxkto.supabase.co, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmd25mYW9jc3N3cWVyaGd4a3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNjE3MTksImV4cCI6MjA4MDgzNzcxOX0.8ADF4wgcEv_lI2qOPcDt1OujckrIBoDYE52wIE8YZEM);
+    const tbody = document.querySelector("#log-table tbody");
+
+    async function loadData() {
+      const { data, error } = await client
+        .from("locations")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      tbody.innerHTML = "";
+
+      if (error) {
+        tbody.innerHTML = `<tr><td colspan="7">Error load data: ${error.message}</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="muted">Belum ada data.</td></tr>`;
+        return;
+      }
+
+      for (const row of data) {
+        const ua = row.user_agent || "";
+        const uaShort = ua.slice(0, 70) + (ua.length > 70 ? "..." : "");
+        const maps = `https://www.google.com/maps?q=${row.lat},${row.lon}`;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row.id ?? ""}</td>
+          <td>${row.created_at ?? ""}</td>
+          <td>${row.lat ?? ""}</td>
+          <td>${row.lon ?? ""}</td>
+          <td>${row.accuracy ?? ""}</td>
+          <td><code>${uaShort}</code></td>
+          <td><a href="${maps}" target="_blank" rel="noopener">Buka</a></td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
