@@ -55,8 +55,8 @@ ctx.imageSmoothingEnabled = false;
 const bird = {
   x: 50,
   y: 150,
-  w: 42,
-  h: 42,
+  w: 36,
+  h: 36,
   velocity: 0,
   gravity: 0.25,
   jump: 4.6,
