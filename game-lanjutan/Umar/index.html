@@ -1,33 +1,308 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-           content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Whac-A-Mole</title>
+<meta charset="UTF-8">
+<title>Piano Game - Balonku Ada 5</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #222;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.game {
+  width: 900px;
+  height: 600px;
+  background: #111;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== START SCREEN ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.start-box {
+  background: #222;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+.start-btn {
+  margin-top: 20px;
+  padding: 12px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== SCORE ===== */
+.score {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  color: white;
+  font-size: 18px;
+}
+
+/* ===== FALL AREA ===== */
+.fall-area {
+  height: 380px;
+  display: flex;
+}
+
+.column {
+  flex: 1;
+  border-left: 1px solid #333;
+  border-right: 1px solid #333;
+  position: relative;
+}
+
+.falling-note {
+  position: absolute;
+  top: -50px;
+  width: 100%;
+  height: 45px;
+  background: #4caf50;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 45px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===== HIT LINE ===== */
+.hit-line {
+  position: absolute;
+  bottom: 220px;
+  width: 100%;
+  height: 3px;
+  background: red;
+}
+
+/* ===== PIANO ===== */
+.piano {
+  position: absolute;
+  bottom: 0;
+  height: 220px;
+  width: 100%;
+  background: #333;
+  padding: 10px;
+}
+
+.white-keys {
+  display: flex;
+  height: 100%;
+}
+
+.white {
+  flex: 1;
+  background: white;
+  margin: 2px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.white.active {
+  background: #ffe082;
+}
+
+.black-keys {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  height: 130px;
+  width: calc(100% - 20px);
+}
+
+.black {
+  position: absolute;
+  width: 60px;
+  height: 130px;
+  background: black;
+  color: white;
+  border-radius: 0 0 6px 6px;
+  text-align: center;
+  line-height: 120px;
+  cursor: pointer;
+}
+
+.black.active {
+  background: #555;
+}
+
+/* posisi not hitam */
+.b1 { left: 80px; }
+.b2 { left: 200px; }
+.b3 { left: 430px; }
+.b4 { left: 550px; }
+.b5 { left: 670px; }
+</style>
 </head>
 
 <body>
-    <div class="game-info">
-        <div id="score">Score: 0</div>
-        <div id="timer">Time: 60s</div>
-    </div>
-    <button id="startButton">Start Game</button>
-    <button id="endButton" disabled>End Game</button>
-    <div class="game-container">
-        <div class="hole" id="hole1"></div>
-        <div class="hole" id="hole2"></div>
-        <div class="hole" id="hole3"></div>
-        <div class="hole" id="hole4"></div>
-        <div class="hole" id="hole5"></div>
-        <div class="hole" id="hole6"></div>
-        <div class="hole" id="hole7"></div>
-        <div class="hole" id="hole8"></div>
-        <div class="hole" id="hole9"></div>
-    </div>
-    <script src="java.js"></script>
-</body>
 
+<div class="game">
+
+<!-- START -->
+<div class="overlay" id="startScreen">
+  <div class="start-box">
+    <h1>🎈 Balonku Ada 5 🎹</h1>
+    <p>Tekan angka 1–8 atau klik piano</p>
+    <button class="start-btn" id="startBtn">START</button>
+  </div>
+</div>
+
+<div class="score">Skor: <span id="score">0</span></div>
+<div class="hit-line"></div>
+
+<!-- FALL -->
+<div class="fall-area">
+  <div class="column" data-key="1"></div>
+  <div class="column" data-key="2"></div>
+  <div class="column" data-key="3"></div>
+  <div class="column" data-key="4"></div>
+  <div class="column" data-key="5"></div>
+  <div class="column" data-key="6"></div>
+  <div class="column" data-key="7"></div>
+  <div class="column" data-key="8"></div>
+</div>
+
+<!-- PIANO -->
+<div class="piano">
+  <div class="black-keys">
+    <div class="black b1" data-key="1">#</div>
+    <div class="black b2" data-key="2">#</div>
+    <div class="black b3" data-key="4">#</div>
+    <div class="black b4" data-key="5">#</div>
+    <div class="black b5" data-key="6">#</div>
+  </div>
+
+  <div class="white-keys">
+    <div class="white" data-key="1">1</div>
+    <div class="white" data-key="2">2</div>
+    <div class="white" data-key="3">3</div>
+    <div class="white" data-key="4">4</div>
+    <div class="white" data-key="5">5</div>
+    <div class="white" data-key="6">6</div>
+    <div class="white" data-key="7">7</div>
+    <div class="white" data-key="8">8</div>
+  </div>
+</div>
+</div>
+
+<script>
+let audioCtx;
+let gameStarted = false;
+let score = 0;
+const scoreEl = document.getElementById('score');
+
+const freq = {
+  1:261.63,2:293.66,3:329.63,4:349.23,
+  5:392,6:440,7:493.88,8:523.25
+};
+
+/* ===== LAGU BALONKU ADA 5 ===== */
+const song = [
+  {k:5,t:0},{k:5,t:600},{k:6,t:1200},{k:5,t:1800},{k:4,t:2400},
+  {k:3,t:3200},{k:3,t:3800},{k:4,t:4400},{k:3,t:5000},{k:2,t:5600},
+  {k:5,t:6400},{k:5,t:7000},{k:6,t:7600},{k:5,t:8200},{k:4,t:8800},
+  {k:3,t:9600},{k:3,t:10200},{k:2,t:10800}
+];
+
+function play(key){
+  if(!gameStarted) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.frequency.value = freq[key];
+  o.connect(g);
+  g.connect(audioCtx.destination);
+  g.gain.setValueAtTime(0,audioCtx.currentTime);
+  g.gain.linearRampToValueAtTime(0.3,audioCtx.currentTime+0.05);
+  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.6);
+  o.start();
+  o.stop(audioCtx.currentTime+0.6);
+}
+
+function spawn(key){
+  const col = document.querySelector(`.column[data-key="${key}"]`);
+  const n = document.createElement('div');
+  n.className = 'falling-note';
+  n.textContent = key;
+  col.appendChild(n);
+
+  let y=-50;
+  const f=setInterval(()=>{
+    y+=3; n.style.top=y+'px';
+    if(y>380){clearInterval(f);n.remove();}
+  },20);
+
+  n.onclick=()=>hit(key);
+}
+
+function playSong(){
+  song.forEach(n=>{
+    setTimeout(()=>spawn(n.k),n.t);
+  });
+}
+
+function hit(key){
+  play(key);
+  const w=document.querySelector(`.white[data-key="${key}"]`);
+  if(w){w.classList.add('active');setTimeout(()=>w.classList.remove('active'),150);}
+  const col=document.querySelector(`.column[data-key="${key}"]`);
+  const note=col.querySelector('.falling-note');
+  if(note && note.offsetTop>300 && note.offsetTop<360){
+    score+=10;
+    scoreEl.textContent=score;
+    note.remove();
+  }
+}
+
+/* START */
+document.getElementById('startBtn').onclick=()=>{
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  document.getElementById('startScreen').style.display='none';
+  gameStarted=true;
+  playSong();
+};
+
+document.addEventListener('keydown',e=>{
+  if(e.key>='1'&&e.key<='8')hit(e.key);
+});
+
+document.querySelectorAll('.white').forEach(k=>{
+  k.onclick=()=>hit(k.dataset.key);
+});
+</script>
+
+</body>
 </html>
