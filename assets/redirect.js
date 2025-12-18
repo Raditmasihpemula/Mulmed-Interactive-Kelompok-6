@@ -11,25 +11,21 @@
   }
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    set("Config belum diisi", "Isi assets/config.js", "Missing SUPABASE config.");
+    set("Config belum diisi", "Isi /assets/config.js (ROOT)", "Missing SUPABASE config.");
     return;
   }
 
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  function getSlugFromPath() {
-    const path = (location.pathname || "/").replace(/\/+$/, "");
-    const parts = path.split("/").filter(Boolean);
-    const slug = parts[parts.length - 1] || "";
-    // ignore known files
-    if (!slug || slug === "index.html" || slug === "404.html") return null;
-    return slug;
+  function getSlug() {
+    const m = location.pathname.match(/\/s\/([^\/?#]+)/);
+    return m ? decodeURIComponent(m[1]).toLowerCase() : null;
   }
 
   async function run() {
-    const slug = getSlugFromPath();
+    const slug = getSlug();
     if (!slug) {
-      set("Not found", "Slug tidak ditemukan.", "Buka halaman utama untuk membuat shortlink.");
+      set("Not found", "Format shortlink harus /s/<slug>", location.pathname);
       return;
     }
 
@@ -42,7 +38,7 @@
       .limit(1);
 
     if (error) {
-      set("Error", "Gagal query database.", error.message);
+      set("Error", "Query Supabase gagal.", error.message);
       return;
     }
 
@@ -61,7 +57,7 @@
     }
 
     set("Redirect…", "Mengalihkan sekarang.", row.url);
-    setTimeout(() => { window.location.href = row.url; }, 200);
+    setTimeout(() => (location.href = row.url), 200);
   }
 
   run();
