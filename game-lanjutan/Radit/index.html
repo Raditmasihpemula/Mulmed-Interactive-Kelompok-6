@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Productivity Hub</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="top">
+        <div>
+          <div class="badge"><span class="dot"></span> Productivity Hub</div>
+          <h1>Shortlink + PDF Resizer</h1>
+          <p>GitHub Pages + Supabase. Shortlink bisa custom slug & expired.</p>
+        </div>
+        <div class="row" style="margin-top:0">
+          <a class="btn ghost" href="./log.html">Log (optional)</a>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="short">Shortlink</button>
+        <button class="tab" data-tab="pdf">PDF Resizer</button>
+      </div>
+
+      <!-- SHORTLINK -->
+      <div id="tab-short" class="grid">
+        <div class="panel">
+          <h2>Buat Shortlink</h2>
+          <p class="sub">Masukkan URL panjang → optional custom slug → optional expired.</p>
+
+          <label>URL Tujuan</label>
+          <input id="longUrl" placeholder="https://example.com" />
+
+          <label>Custom Slug (optional)</label>
+          <input id="customSlug" placeholder="mis: promo2025" />
+          <small>Karakter: a-z, 0-9, - (3–32)</small>
+
+          <label>Expired (optional)</label>
+          <input id="expiresAt" type="datetime-local" />
+          <small>Kosongkan jika tidak ingin expired.</small>
+
+          <div class="row">
+            <button id="createBtn" class="primary" type="button">Create</button>
+            <button id="checkBtn" class="ghost" type="button">Cek Slug</button>
+          </div>
+
+          <div id="shortOut" class="out">Belum ada link.</div>
+
+          <div class="row">
+            <button id="copyBtn" disabled type="button">Copy</button>
+            <a id="openBtn" class="btn" href="#" target="_blank" rel="noopener">Open</a>
+          </div>
+
+          <div class="note">
+            Short URL kamu akan berbentuk <code>domainkamu/slug</code>.
+            Di GitHub Pages, redirectnya ditangani oleh <code>404.html</code>.
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Cara Kerja Redirect</h2>
+          <p class="sub">Saat orang buka <code>/slug</code>, GitHub Pages mengarah ke <code>404.html</code>, lalu script cek Supabase dan redirect.</p>
+          <div class="out" style="min-height:auto">
+- Jika slug tidak ada → tampil “Not found”
+- Jika expired → tampil “Expired”
+- Jika valid → redirect ke URL tujuan
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF -->
+      <div id="tab-pdf" class="grid hidden">
+        <div class="panel">
+          <h2>PDF Resizer / Compressor</h2>
+          <p class="sub">Kompress dengan render ulang halaman (hasil jadi gambar/raster).</p>
+
+          <label>Pilih PDF</label>
+          <input id="pdfFile" type="file" accept="application/pdf" />
+
+          <label>Render Scale</label>
+          <input id="scale" type="range" min="0.6" max="2.0" step="0.1" value="1.0" />
+          <small>Scale: <span id="scaleVal">1.0</span>x</small>
+
+          <label>JPEG Quality</label>
+          <input id="quality" type="range" min="0.35" max="0.95" step="0.05" value="0.75" />
+          <small>Quality: <span id="qualityVal">0.75</span></small>
+
+          <div class="row">
+            <button id="compressBtn" class="primary" type="button">Compress</button>
+            <button id="downloadBtn" disabled type="button">Download</button>
+          </div>
+
+          <div id="pdfProgress" class="progress">Ready.</div>
+
+          <div class="note">
+            Catatan: metode ini meraster halaman → teks/vector bisa jadi tidak selectable.
+            Cocok untuk PDF hasil scan / banyak gambar.
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Tips</h2>
+          <div class="out" style="min-height:auto">
+- Untuk ukuran kecil: scale 0.8–1.0 + quality 0.55–0.70
+- Untuk tetap jelas: scale 1.2–1.5 + quality 0.75–0.85
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- libs -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://unpkg.com/pdfjs-dist@4.7.76/build/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+  <script src="./assets/config.js"></script>
+  <script src="./assets/app.js"></script>
+</body>
+</html>
