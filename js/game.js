@@ -115,7 +115,7 @@ const bird = {
 const pipes = {
   position: [],
   w: 40,
-  gap: 120,
+  gap: 150,
   dx: 2,
 
   draw: function () {
