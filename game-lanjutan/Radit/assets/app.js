@@ -4,7 +4,6 @@
     alert("config.js belum diisi (SUPABASE_URL / SUPABASE_ANON_KEY).");
     return;
   }
-
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ---------- Tabs ----------
@@ -33,11 +32,9 @@
   function normalizeUrl(v) {
     try { return new URL(v).toString(); } catch { return null; }
   }
-
   function isValidSlug(slug) {
     return /^[a-z0-9-]{3,32}$/.test(slug);
   }
-
   function randSlug(len = 7) {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
     let s = "";
@@ -45,13 +42,18 @@
     return s;
   }
 
-  function baseUrl() {
-    // works for / or /index.html
-    return new URL(".", location.href).toString().replace(/\/+$/, "");
+  // IMPORTANT: build base for github.io (origin + /repo)
+  function siteBase() {
+    if (location.hostname.endsWith("github.io")) {
+      const parts = location.pathname.split("/").filter(Boolean);
+      const repo = parts[0] || "";
+      return location.origin + (repo ? `/${repo}` : "");
+    }
+    return location.origin;
   }
 
   function makeShortUrl(slug) {
-    return `${baseUrl()}/${slug}`;
+    return `${siteBase()}/s/${slug}`;
   }
 
   async function slugExists(slug) {
@@ -69,7 +71,6 @@
       const s = randSlug(7);
       if (!(await slugExists(s))) return s;
     }
-    // fallback
     return `${randSlug(6)}-${randSlug(3)}`;
   }
 
@@ -86,10 +87,7 @@
 
   async function handleCreate() {
     const url = normalizeUrl(longUrlEl.value.trim());
-    if (!url) {
-      shortOut.textContent = "URL tujuan tidak valid.";
-      return;
-    }
+    if (!url) { shortOut.textContent = "URL tujuan tidak valid."; return; }
 
     let slug = (customSlugEl.value || "").trim().toLowerCase();
     if (slug && !isValidSlug(slug)) {
@@ -151,11 +149,9 @@
   createBtn.addEventListener("click", handleCreate);
 
   // ---------- PDF Resizer / Compressor ----------
-  // pdf.js worker
-  if (window.pdfjsLib) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc =
-      "https://unpkg.com/pdfjs-dist@4.7.76/build/pdf.worker.min.js";
-  }
+  // IMPORTANT: pdf.js UMD exposes global "pdfjsLib"
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
   const pdfFile = document.getElementById("pdfFile");
   const scale = document.getElementById("scale");
@@ -216,7 +212,6 @@
 
         const jpg = await out.embedJpg(jpgBytes);
 
-        // keep original physical size (viewport1), draw image to fit that size
         const outPage = out.addPage([viewport1.width, viewport1.height]);
         outPage.drawImage(jpg, { x: 0, y: 0, width: viewport1.width, height: viewport1.height });
       }
@@ -224,7 +219,7 @@
       setProgress("Menyusun PDF output...");
       outputBytes = await out.save();
 
-      setProgress(`Selesai ✅ (hasil siap di-download)`);
+      setProgress("Selesai ✅ (hasil siap di-download)");
       downloadBtn.disabled = false;
     } catch (e) {
       setProgress("Error: " + (e?.message || String(e)));
