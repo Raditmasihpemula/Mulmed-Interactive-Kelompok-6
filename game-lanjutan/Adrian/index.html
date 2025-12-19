@@ -1,33 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Launcher Paksa</title>
-    <script type="text/javascript">
-        function paksaBuka() {
-            try {
-                // Ini script purba yang cuma dimengerti Internet Explorer/ActiveX
-                // Browser modern bakal muntah liat kode ini
-                var shell = new ActiveXObject("WScript.Shell");
-                
-                // Path lu. Perhatikan backslashnya double (\\) itu WAJIB di JS
-                var path = '"C:\\Users\\adrnp\\Documents\\RPGVXAce\\Project Mulmed\\Game.exe"';
-                
-                shell.Run(path);
-            } catch (e) {
-                // Kalau masuk sini, berarti lu ngeyel buka pake Chrome/Firefox
-                alert("GAGAL! Browser lu ngeblok.\n\nSyarat biar jalan:\n1. Buka file ini pake INTERNET EXPLORER (IE).\n2. Izinkan 'Blocked Content' di bawah layar.");
-            }
-        }
-    </script>
-</head>
-<body style="background: #000; color: #fff; text-align: center; padding-top: 50px;">
-
-    <h1>Launcher Lokal</h1>
-    <p>Khusus Laptop Gua Doang</p>
+    <title>Game Launcher</title>
+    <HTA:APPLICATION 
+        ID="oMyApp" 
+        APPLICATIONNAME="GameLauncher" 
+        BORDER="thick" 
+        CAPTION="yes" 
+        ICON="game.ico" 
+        SHOWINTASKBAR="yes" 
+        SINGLEINSTANCE="yes" 
+        SYSMENU="yes">
     
-    <button onclick="paksaBuka()" style="padding: 20px 50px; font-size: 20px; background: red; color: white; border: none; cursor: pointer; font-weight: bold;">
-        GAS BUKA GAME
-    </button>
+    <script language="VBScript">
+        Sub BukaGame
+            ' Konfirmasi Alert sebelum membuka
+            Dim answer
+            answer = MsgBox("Apakah kamu ingin membuka Game RPG VX Ace?", 4, "Konfirmasi")
+            
+            ' Jika user klik Yes (VbYes = 6)
+            If answer = 6 Then
+                Set objShell = CreateObject("WScript.Shell")
+                ' Path game kamu (menggunakan tanda kutip ganda karena ada spasi pada nama folder)
+                strPath = """C:\Users\adrnp\Documents\RPGVXAce\Project Mulmed\Game.exe"""
+                
+                ' Menjalankan Game
+                objShell.Run strPath
+                
+                ' Opsional: Menutup launcher setelah game terbuka
+                ' window.close() 
+            End If
+        End Sub
+    </script>
 
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f0f0f0; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 5px; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h2>Project Mulmed Launcher</h2>
+    <p>Klik tombol di bawah untuk memulai.</p>
+    
+    <button onclick="BukaGame">Mainkan Game</button>
 </body>
 </html>
