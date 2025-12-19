@@ -1,306 +1,256 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Piano Game - Balonku Ada 5</title>
+<meta charset="UTF-8" />
+<title>Piano Game</title>
 
 <style>
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: #222;
-  font-family: Arial, sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
-}
-
-.game {
-  width: 900px;
-  height: 600px;
-  background: #111;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-}
-
-/* ===== START SCREEN ===== */
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.85);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #6dd5ed, #2193b0);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
 }
 
-.start-box {
-  background: #222;
-  padding: 40px;
-  border-radius: 12px;
+/* ================= WRAPPER ================= */
+.wrapper {
+  background: rgba(255,255,255,0.95);
+  padding: 30px 32px 32px;
+  border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.25);
   text-align: center;
-  color: white;
+  animation: fadeIn 0.8s ease;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-size: 36px;
+  margin: 0 0 6px;
+  color: #ff6f61; /* fallback aman */
+
+  background: linear-gradient(90deg, #ff8a00, #e52e71);
+}
+
+/* aktifkan gradient text hanya jika didukung */
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  h1 {
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.subtitle {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* ================= BUTTON ================= */
 .start-btn {
-  margin-top: 20px;
-  padding: 12px 30px;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  background: #4caf50;
-  color: white;
-  cursor: pointer;
-}
-
-/* ===== SCORE ===== */
-.score {
-  position: absolute;
-  top: 10px;
-  left: 15px;
-  color: white;
-  font-size: 18px;
-}
-
-/* ===== FALL AREA ===== */
-.fall-area {
-  height: 380px;
-  display: flex;
-}
-
-.column {
-  flex: 1;
-  border-left: 1px solid #333;
-  border-right: 1px solid #333;
   position: relative;
-}
-
-.falling-note {
-  position: absolute;
-  top: -50px;
-  width: 100%;
-  height: 45px;
-  background: #4caf50;
-  color: white;
-  font-size: 20px;
+  margin-bottom: 26px;
+  padding: 14px 38px;
+  font-size: 18px;
   font-weight: bold;
-  text-align: center;
-  line-height: 45px;
-  border-radius: 6px;
+  color: #fff;
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  border: none;
+  border-radius: 50px;
   cursor: pointer;
+  box-shadow: 0 10px 25px rgba(67,206,162,0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  animation: pulse 1.8s infinite;
 }
 
-/* ===== HIT LINE ===== */
-.hit-line {
-  position: absolute;
-  bottom: 220px;
-  width: 100%;
-  height: 3px;
-  background: red;
+.start-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 18px 40px rgba(67,206,162,0.7);
 }
 
-/* ===== PIANO ===== */
+.start-btn:active {
+  transform: scale(0.96);
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(67,206,162,0.6); }
+  70%  { box-shadow: 0 0 0 18px rgba(67,206,162,0); }
+  100% { box-shadow: 0 0 0 0 rgba(67,206,162,0); }
+}
+
+/* ================= PIANO ================= */
 .piano {
-  position: absolute;
-  bottom: 0;
-  height: 220px;
-  width: 100%;
-  background: #333;
-  padding: 10px;
+  position: relative;
+  background: linear-gradient(145deg, #2b2b2b, #1e1e1e);
+  padding: 16px;
+  border-radius: 18px;
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.1),
+    0 10px 30px rgba(0,0,0,0.4);
 }
 
+/* WHITE KEYS */
 .white-keys {
   display: flex;
-  height: 100%;
+  height: 260px;
 }
 
-.white {
-  flex: 1;
-  background: white;
-  margin: 2px;
-  border-radius: 6px;
+.key.white {
+  width: 60px;
+  background: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  border: 1px solid #ccc;
+  border-radius: 0 0 8px 8px;
+  margin: 0 2px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  font-size: 18px;
   font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
+  padding-bottom: 10px;
+  user-select: none;
+  transition: all 0.08s ease;
 }
 
-.white.active {
-  background: #ffe082;
-}
-
+/* BLACK KEYS */
 .black-keys {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  height: 130px;
-  width: calc(100% - 20px);
+  top: 16px;
+  left: 16px;
+  height: 160px;
+  pointer-events: none;
 }
 
-.black {
+.key.black {
   position: absolute;
-  width: 60px;
-  height: 130px;
-  background: black;
-  color: white;
+  width: 38px;
+  height: 160px;
+  background: linear-gradient(to bottom, #000, #444);
   border-radius: 0 0 6px 6px;
-  text-align: center;
-  line-height: 120px;
+  color: #fff;
+  font-size: 10px;
   cursor: pointer;
+  pointer-events: auto;
+  padding-bottom: 6px;
+  z-index: 10;
+  transition: all 0.08s ease;
 }
 
-.black.active {
-  background: #555;
+/* HIGHLIGHT */
+.key.white.active {
+  background: linear-gradient(to bottom, #cde6ff, #9ecbff);
+  transform: translateY(2px);
 }
 
-/* posisi not hitam */
-.b1 { left: 80px; }
-.b2 { left: 200px; }
-.b3 { left: 430px; }
-.b4 { left: 550px; }
-.b5 { left: 670px; }
+.key.black.active {
+  background: linear-gradient(to bottom, #555, #222);
+  transform: translateY(2px);
+}
 </style>
 </head>
 
 <body>
 
-<div class="game">
-
-<!-- START -->
-<div class="overlay" id="startScreen">
-  <div class="start-box">
-    <h1>🎈 Balonku Ada 5 🎹</h1>
-    <p>Tekan angka 1–8 atau klik piano</p>
-    <button class="start-btn" id="startBtn">START</button>
-  </div>
-</div>
-
-<div class="score">Skor: <span id="score">0</span></div>
-<div class="hit-line"></div>
-
-<!-- FALL -->
-<div class="fall-area">
-  <div class="column" data-key="1"></div>
-  <div class="column" data-key="2"></div>
-  <div class="column" data-key="3"></div>
-  <div class="column" data-key="4"></div>
-  <div class="column" data-key="5"></div>
-  <div class="column" data-key="6"></div>
-  <div class="column" data-key="7"></div>
-  <div class="column" data-key="8"></div>
-</div>
-
-<!-- PIANO -->
-<div class="piano">
-  <div class="black-keys">
-    <div class="black b1" data-key="1">#</div>
-    <div class="black b2" data-key="2">#</div>
-    <div class="black b3" data-key="4">#</div>
-    <div class="black b4" data-key="5">#</div>
-    <div class="black b5" data-key="6">#</div>
+<div class="wrapper">
+  <h1>Piano Game</h1>
+  <div class="subtitle">
+    Belajar nada musik dengan cara menyenangkan
   </div>
 
-  <div class="white-keys">
-    <div class="white" data-key="1">1</div>
-    <div class="white" data-key="2">2</div>
-    <div class="white" data-key="3">3</div>
-    <div class="white" data-key="4">4</div>
-    <div class="white" data-key="5">5</div>
-    <div class="white" data-key="6">6</div>
-    <div class="white" data-key="7">7</div>
-    <div class="white" data-key="8">8</div>
+  <button class="start-btn" onclick="location.href='game1.html'">
+    ▶ START GAME
+  </button>
+
+  <div class="piano">
+
+    <!-- NOT HITAM -->
+    <div class="black-keys">
+      <div class="key black" style="left:109px" data-note="C#4">#</div>
+      <div class="key black" style="left:173px" data-note="D#4">#</div>
+      <div class="key black" style="left:301px" data-note="F#4">#</div>
+      <div class="key black" style="left:366px" data-note="G#4">#</div>
+      <div class="key black" style="left:430px" data-note="A#4">#</div>
+
+      <div class="key black" style="left:555px" data-note="C#5">#</div>
+      <div class="key black" style="left:625px" data-note="D#5">#</div>
+      <div class="key black" style="left:749px" data-note="F#5">#</div>
+      <div class="key black" style="left:814px" data-note="G#5">#</div>
+      <div class="key black" style="left:878px" data-note="A#5">#</div>
+    </div>
+
+    <!-- NOT PUTIH -->
+    <div class="white-keys">
+      <div class="key white" data-note="B3">B3</div>
+      <div class="key white" data-note="C4">1</div>
+      <div class="key white" data-note="D4">2</div>
+      <div class="key white" data-note="E4">3</div>
+      <div class="key white" data-note="F4">4</div>
+      <div class="key white" data-note="G4">5</div>
+      <div class="key white" data-note="A4">6</div>
+      <div class="key white" data-note="B4">7</div>
+
+      <div class="key white" data-note="C5">1</div>
+      <div class="key white" data-note="D5">2</div>
+      <div class="key white" data-note="E5">3</div>
+      <div class="key white" data-note="F5">4</div>
+      <div class="key white" data-note="G5">5</div>
+      <div class="key white" data-note="A5">6</div>
+      <div class="key white" data-note="B5">7</div>
+
+      <div class="key white" data-note="C6">C6</div>
+    </div>
   </div>
-</div>
 </div>
 
 <script>
-let audioCtx;
-let gameStarted = false;
-let score = 0;
-const scoreEl = document.getElementById('score');
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
 
-const freq = {
-  1:261.63,2:293.66,3:329.63,4:349.23,
-  5:392,6:440,7:493.88,8:523.25
+const frequencies = {
+  B3:246.94,
+  C4:261.63,'C#4':277.18,D4:293.66,'D#4':311.13,E4:329.63,
+  F4:349.23,'F#4':369.99,G4:392,'G#4':415.3,A4:440,
+  'A#4':466.16,B4:493.88,
+  C5:523.25,'C#5':554.37,D5:587.33,'D#5':622.25,E5:659.25,
+  F5:698.46,'F#5':739.99,G5:783.99,'G#5':830.61,A5:880,
+  'A#5':932.33,B5:987.77,
+  C6:1046.5
 };
 
-/* ===== LAGU BALONKU ADA 5 ===== */
-const song = [
-  {k:5,t:0},{k:5,t:600},{k:6,t:1200},{k:5,t:1800},{k:4,t:2400},
-  {k:3,t:3200},{k:3,t:3800},{k:4,t:4400},{k:3,t:5000},{k:2,t:5600},
-  {k:5,t:6400},{k:5,t:7000},{k:6,t:7600},{k:5,t:8200},{k:4,t:8800},
-  {k:3,t:9600},{k:3,t:10200},{k:2,t:10800}
-];
-
-function play(key){
-  if(!gameStarted) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.frequency.value = freq[key];
-  o.connect(g);
-  g.connect(audioCtx.destination);
-  g.gain.setValueAtTime(0,audioCtx.currentTime);
-  g.gain.linearRampToValueAtTime(0.3,audioCtx.currentTime+0.05);
-  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.6);
-  o.start();
-  o.stop(audioCtx.currentTime+0.6);
+function playNote(note){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type='sine';
+  osc.frequency.value=frequencies[note];
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  gain.gain.setValueAtTime(2,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.8);
+  osc.start();
+  osc.stop(audioCtx.currentTime+0.8);
 }
 
-function spawn(key){
-  const col = document.querySelector(`.column[data-key="${key}"]`);
-  const n = document.createElement('div');
-  n.className = 'falling-note';
-  n.textContent = key;
-  col.appendChild(n);
-
-  let y=-50;
-  const f=setInterval(()=>{
-    y+=3; n.style.top=y+'px';
-    if(y>380){clearInterval(f);n.remove();}
-  },20);
-
-  n.onclick=()=>hit(key);
+function highlight(note){
+  const key=document.querySelector(`.key[data-note="${note}"]`);
+  if(!key) return;
+  key.classList.add('active');
+  setTimeout(()=>key.classList.remove('active'),150);
 }
 
-function playSong(){
-  song.forEach(n=>{
-    setTimeout(()=>spawn(n.k),n.t);
+document.querySelectorAll('.key').forEach(k=>{
+  k.addEventListener('mousedown',()=>{
+    playNote(k.dataset.note);
+    highlight(k.dataset.note);
   });
-}
-
-function hit(key){
-  play(key);
-  const w=document.querySelector(`.white[data-key="${key}"]`);
-  if(w){w.classList.add('active');setTimeout(()=>w.classList.remove('active'),150);}
-  const col=document.querySelector(`.column[data-key="${key}"]`);
-  const note=col.querySelector('.falling-note');
-  if(note && note.offsetTop>300 && note.offsetTop<360){
-    score+=10;
-    scoreEl.textContent=score;
-    note.remove();
-  }
-}
-
-/* START */
-document.getElementById('startBtn').onclick=()=>{
-  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  document.getElementById('startScreen').style.display='none';
-  gameStarted=true;
-  playSong();
-};
-
-document.addEventListener('keydown',e=>{
-  if(e.key>='1'&&e.key<='8')hit(e.key);
-});
-
-document.querySelectorAll('.white').forEach(k=>{
-  k.onclick=()=>hit(k.dataset.key);
 });
 </script>
 

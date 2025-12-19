@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Piano Game - Balonku Ada 5</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* GAME */
+.game {
+  width: 900px;
+  height: 600px;
+  background: linear-gradient(180deg, #111, #1b1b1b);
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* OVERLAY */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup {
+  background: #222;
+  padding: 36px;
+  border-radius: 16px;
+  text-align: center;
+  color: white;
+  width: 380px;
+}
+
+.popup button {
+  margin-top: 20px;
+  padding: 12px 36px;
+  border-radius: 30px;
+  border: none;
+  font-weight: bold;
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  color: white;
+  cursor: pointer;
+}
+
+/* SCORE */
+.score {
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* FALL AREA */
+.fall-area {
+  height: 380px;
+  display: flex;
+  position: relative;
+  z-index: 1;
+}
+
+.column {
+  flex: 1;
+  position: relative;
+}
+
+.falling-note {
+  position: absolute;
+  top: -50px;
+  width: 100%;
+  height: 45px;
+  background: linear-gradient(135deg, #43cea2, #185a9d);
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  line-height: 45px;
+  border-radius: 10px;
+}
+
+/* HIT LINE */
+.hit-line {
+  position: absolute;
+  bottom: 220px;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, red, transparent);
+  z-index: 2;
+}
+
+/* PIANO */
+.piano {
+  position: absolute;
+  bottom: 0;
+  height: 220px;
+  width: 100%;
+  background: linear-gradient(180deg, #444, #222);
+  padding: 10px;
+  z-index: 3;
+}
+
+/* WHITE KEYS */
+.white-keys {
+  display: flex;
+  height: 100%;
+  z-index: 1;
+}
+
+.white {
+  flex: 1;
+  margin: 3px;
+  background: linear-gradient(to bottom, #fff, #e0e0e0);
+  border-radius: 10px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+.white.active { background: linear-gradient(to bottom, #ffe082, #ffca28); }
+
+/* BLACK KEYS */
+.black-keys {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  height: 130px;
+  z-index: 5;
+}
+
+.black {
+  position: absolute;
+  width: 60px;
+  height: 130px;
+  background: linear-gradient(to bottom, #111, #000);
+  border-radius: 0 0 8px 8px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 6;
+}
+
+.black.active { background: linear-gradient(to bottom, #ff9800, #e65100); }
+</style>
+</head>
+
+<body>
+<div class="game">
+
+<!-- LEVEL POPUP -->
+<div class="overlay" id="levelPopup">
+  <div class="popup">
+    <h2>🎵 Level 1: Balonku Ada 5</h2>
+    <p>Level 1 <br>Tekan not putih dengan angka 1 sampai 8 sesuai dengan lagu.<br>Target skor: <b>200</b></p>
+    <button onclick="startGame()">▶ MULAI</button>
+  </div>
+</div>
+
+<!-- RESULT POPUP -->
+<div class="overlay" id="resultScreen" style="display:none;">
+  <div class="popup" id="resultBox"></div>
+</div>
+
+<div class="score">Skor: <span id="score">0</span></div>
+<div class="hit-line"></div>
+
+<div class="fall-area">
+  <div class="column" data-key="1"></div>
+  <div class="column" data-key="2"></div>
+  <div class="column" data-key="3"></div>
+  <div class="column" data-key="4"></div>
+  <div class="column" data-key="5"></div>
+  <div class="column" data-key="6"></div>
+  <div class="column" data-key="7"></div>
+  <div class="column" data-key="8"></div>
+</div>
+
+<div class="piano">
+  <div class="black-keys">
+    <div class="black" style="left:85px">#</div>
+    <div class="black" style="left:185px">#</div>
+    <div class="black" style="left:410px">#</div>
+    <div class="black" style="left:520px">#</div>
+    <div class="black" style="left:630px">#</div>
+  </div>
+  <div class="white-keys">
+    <div class="white" data-key="1">1</div>
+    <div class="white" data-key="2">2</div>
+    <div class="white" data-key="3">3</div>
+    <div class="white" data-key="4">4</div>
+    <div class="white" data-key="5">5</div>
+    <div class="white" data-key="6">6</div>
+    <div class="white" data-key="7">7</div>
+    <div class="white" data-key="8">8</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let audioCtx;
+let gameStarted=false;
+let songFinished=false;
+let score=0;
+
+const scoreEl=document.getElementById('score');
+const levelPopup=document.getElementById('levelPopup');
+const resultScreen=document.getElementById('resultScreen');
+
+const freq={1:261.63,2:293.66,3:329.63,4:349.23,5:392,6:440,7:493.88,8:523.25};
+const song=[{k:3,t:0},
+  {k:4,t:600},
+  {k:5,t:1200},
+  {k:8,t:1800},
+  {k:5,t:2400},
+  {k:3,t:3200},
+  {k:5,t:3800},
+
+  {k:2,t:4400},
+  {k:3,t:5000},
+  {k:4,t:5600},
+  {k:2,t:6400},
+  {k:5,t:7000},
+  {k:3,t:7600},
+  {k:3,t:8200},
+
+  {k:1,t:8800},
+  {k:1,t:9600},
+  {k:6,t:10200},
+  {k:6,t:10800},
+  {k:7,t:11200},
+  {k:7,t:11600},
+  {k:8,t:12000},
+  {k:5,t:12400},
+  {k:1,t:12800},
+
+  {k:3,t:13200},
+  {k:4,t:13600},
+  {k:5,t:14000},
+  {k:4,t:14400},
+  {k:3,t:14800},
+  {k:2,t:15200},
+  {k:1,t:15600},
+
+  {k:3,t:16000},
+  {k:4,t:16400},
+  {k:5,t:16800},
+  {k:8,t:17200},
+  {k:5,t:17600},
+  {k:3,t:18000},
+  {k:5,t:18400},
+  {k:8,t:18800},
+
+  {k:2,t:19200},
+  {k:3,t:19600},
+  {k:4,t:20000},
+  {k:2,t:20400},
+  {k:5,t:20800},
+  {k:3,t:21200},
+  {k:3,t:21600},
+
+  {k:1,t:22000},
+  {k:1,t:22400},
+  {k:6,t:22800},
+  {k:6,t:23200},
+  {k:7,t:23600},
+  {k:7,t:24000},
+  {k:8,t:24400},
+  {k:5,t:24800},
+  {k:1,t:25200},
+
+  {k:3,t:25600},
+  {k:4,t:26000},
+  {k:5,t:26400},
+  {k:4,t:26800},
+  {k:3,t:27200},
+  {k:2,t:27600},
+  {k:1,t:28000}];
+
+function play(key){
+ if(!gameStarted)return;
+ const o=audioCtx.createOscillator();
+ const g=audioCtx.createGain();
+ o.frequency.value=freq[key];
+ o.connect(g); g.connect(audioCtx.destination);
+ g.gain.setValueAtTime(0,audioCtx.currentTime);
+ g.gain.linearRampToValueAtTime(1,audioCtx.currentTime+.05);
+ g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.6);
+ o.start(); o.stop(audioCtx.currentTime+.6);
+}
+
+function spawn(key){
+ const col=document.querySelector(`.column[data-key="${key}"]`);
+ const n=document.createElement('div');
+ n.className='falling-note'; n.textContent=key; col.appendChild(n);
+ let y=-50;
+ const fall=setInterval(()=>{
+  y+=3; n.style.top=y+'px';
+  if(y>380){clearInterval(fall);n.remove();}
+ },20);
+}
+
+function hit(key){
+ if(!gameStarted||songFinished)return;
+ play(key);
+
+ const col=document.querySelector(`.column[data-key="${key}"]`);
+ const note=col.querySelector('.falling-note');
+ if(note){
+  const y=note.offsetTop;
+  if(y>300&&y<360){
+    score+=10;
+    scoreEl.textContent=score;
+    note.remove();
+  }
+ }
+
+ const w=document.querySelector(`.white[data-key="${key}"]`);
+ if(w){ w.classList.add('active'); setTimeout(()=>w.classList.remove('active'),120); }
+}
+
+function endGame(){
+ songFinished=true; gameStarted=false;
+ const box=document.getElementById('resultBox');
+ resultScreen.style.display='flex';
+ if(score>=200){
+  box.innerHTML=`<h2>🎉 Selamat! 🎉 </h2> <h3>Terima kasih sudah bermain di game ini </h3><p>Skor kamu: <b>${score}</b></p>`;
+ }else{
+  box.innerHTML=`<h2>😢 Coba Lagi</h2><p>Skor kamu: <b>${score}</b></p><button onclick="location.reload()">ULANGI</button>`;
+ }
+}
+
+function startGame(){
+ levelPopup.style.display='none';
+ audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ gameStarted=true; songFinished=false; score=0; scoreEl.textContent=score;
+ song.forEach(n=>setTimeout(()=>spawn(n.k),n.t));
+ setTimeout(endGame,song[song.length-1].t+2000);
+}
+
+// EVENTS
+document.addEventListener('keydown',e=>{ if(e.key>='1'&&e.key<='8')hit(e.key); });
+document.querySelectorAll('.white').forEach(k=>{ k.onclick=()=>hit(k.dataset.key); });
+document.querySelectorAll('.black').forEach(b=>{ b.onclick=()=>{ b.classList.add('active'); setTimeout(()=>b.classList.remove('active'),120); }; });
+</script>
+
+</body>
+</html>
