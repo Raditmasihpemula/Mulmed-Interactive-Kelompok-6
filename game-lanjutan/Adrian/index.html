@@ -8,8 +8,94 @@
     <!-- Pixel Font -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    <!-- Main Style -->
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* BODY */
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: radial-gradient(circle at top, #1a1a2e, #000);
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CONTAINER */
+        .container {
+            text-align: center;
+            padding: 40px 30px;
+            border: 4px solid #ffffff;
+            background-color: #0f0f1a;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+            max-width: 420px;
+            width: 90%;
+        }
+
+        /* TITLE */
+        h1 {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* GLITCH EFFECT */
+        .glitch {
+            text-shadow:
+                2px 0 #00ffff,
+                -2px 0 #ff00ff;
+        }
+
+        /* SUBTITLE */
+        .subtitle {
+            font-size: 10px;
+            color: #bbbbbb;
+            margin-bottom: 30px;
+        }
+
+        /* BOX */
+        .pixel-box {
+            margin: 30px 0;
+        }
+
+        /* BUTTON */
+        .btn-start {
+            display: inline-block;
+            padding: 14px 20px;
+            font-size: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            border: 3px solid #ffffff;
+            background-color: #111;
+            box-shadow: inset -3px -3px 0 #000;
+            transition: all 0.15s ease;
+        }
+
+        /* BUTTON HOVER */
+        .btn-start:hover {
+            background-color: #00ffff;
+            color: #000;
+            box-shadow: inset 3px 3px 0 #000;
+        }
+
+        /* BUTTON ACTIVE */
+        .btn-start:active {
+            transform: translateY(2px);
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 25px;
+            font-size: 8px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
 
@@ -28,9 +114,8 @@
             </a>
         </div>
 
-        <footer>
-            &copy; 2025 Kelompok 6
-        </footer>
+        <footer>&copy; 2025 Kelompok 6</footer>
     </div>
 
-</
+</body>
+</html>
