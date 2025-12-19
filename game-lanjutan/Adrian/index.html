@@ -1,26 +1,38 @@
-<html>
+<!DOCTYPE html>
+<html lang="id">
 <head>
-    <title>Launcher Simpel</title>
-    <HTA:APPLICATION 
-        APPLICATIONNAME="LauncherGame" 
-        SCROLL="yes" 
-        SINGLEINSTANCE="yes"
-    >
-    <script language="VBScript">
-        Sub JalankanGame
-            Set shell = CreateObject("WScript.Shell")
-            ' Perhatikan tanda kutipnya, ini krusial buat path yang ada spasinya
-            path = """C:\Users\adrnp\Documents\RPGVXAce\Project Mulmed\Game.exe"""
-            shell.Run path
-        End Sub
-    </script>
-    <style>
-        body { background-color: #1a1a1a; color: white; text-align: center; font-family: arial; padding-top: 20%; }
-        button { padding: 20px; font-size: 20px; cursor: pointer; background: red; color: white; border: none; }
-    </style>
+    <meta charset="UTF-8">
+    <title>Launcher JS</title>
 </head>
 <body>
-    <h1>Launcher Project Mulmed</h1>
-    <button onclick="JalankanGame">BUKA GAME SEKARANG</button>
+
+    <button onclick="saranBukaGame()" style="padding: 20px; font-size: 18px; cursor: pointer;">
+        COBA BUKA GAME
+    </button>
+
+    <p id="status" style="color: gray; margin-top: 10px;"></p>
+
+    <script>
+        function saranBukaGame() {
+            // Path lu yang ribet itu harus di-encode biar browser ngerti
+            // Spasi jadi %20, Backslash jadi Slash biasa
+            var path = "file:///C:/Users/adrnp/Documents/RPGVXAce/Project%20Mulmed/Game.exe";
+            
+            var status = document.getElementById("status");
+            status.innerText = "Mencoba mengakses: " + path;
+
+            try {
+                // Ini perintah JS buat "ngarahin" browser ke file itu
+                window.location.href = path;
+                
+                // Tambahan log
+                setTimeout(function() {
+                    status.innerText += "\n\nCek folder Download atau pojok kanan atas browser lu. Kalau gak ada reaksi, berarti diblokir Chrome/Edge.";
+                }, 1000);
+            } catch (e) {
+                alert("Gagal: " + e.message);
+            }
+        }
+    </script>
 </body>
 </html>
